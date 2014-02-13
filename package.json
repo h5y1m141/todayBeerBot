@@ -20,6 +20,8 @@
     "request": "~2.33.0",
     "xml2js": "~0.4.1",
     "log4js": "~0.6.9",
-    "ntwitter": "~0.5.0"
+    "ntwitter": "~0.5.0",
+    "underscore": "~1.6.0",
+    "mecab-async": "0.0.7"
   }
 }
