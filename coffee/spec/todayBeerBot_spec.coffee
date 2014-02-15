@@ -12,7 +12,7 @@ describe 'Bot',() ->
 
   it('should be retreive tweet list', (done) ->
     @bot.getTweet( (items) ->
-      expect(items.length).toEqual 200
+      expect(items.length).toEqual 100
       done()
     )  
   ,5000)    

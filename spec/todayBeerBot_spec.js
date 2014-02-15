@@ -16,7 +16,7 @@
     });
     return it('should be retreive tweet list', function(done) {
       return this.bot.getTweet(function(items) {
-        expect(items.length).toEqual(200);
+        expect(items.length).toEqual(100);
         return done();
       });
     }, 5000);
