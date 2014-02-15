@@ -27,4 +27,6 @@ class todayBeerBot
           
       return callback tweets
       
+  retweet:(targetTweet) ->
+    return true      
 exports.todayBeerBot = todayBeerBot

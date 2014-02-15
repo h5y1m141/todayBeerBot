@@ -16,3 +16,11 @@ describe 'Bot',() ->
       done()
     )  
   ,5000)    
+
+  it 'should be retweet', () ->
+    targetTweet =
+      text:"これはテストのための投稿です本日の開栓情報"
+      created_at:"Mon Aug 31 02:04:47 +0000 2009"
+      name:"publican@洗足"
+      id_str:"70277990"
+    expect(@bot.retweet(targetTweet)).toBe true
