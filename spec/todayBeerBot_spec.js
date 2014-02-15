@@ -11,9 +11,15 @@
     beforeEach(function() {
       return this.bot = new todayBeerBot();
     });
-    return it('init test', function() {
+    it('init test', function() {
       return expect(typeof this.bot).toEqual("object");
     });
+    return it('should be retreive tweet list', function(done) {
+      return this.bot.getTweet(function(items) {
+        expect(items.length).toEqual(200);
+        return done();
+      });
+    }, 5000);
   });
 
 }).call(this);
