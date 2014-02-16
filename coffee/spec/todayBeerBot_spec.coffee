@@ -2,14 +2,16 @@ path = require("path")
 modulePath = path.resolve(__dirname, "../lib/todayBeerBot.js")
 todayBeerBot = require(modulePath).todayBeerBot
 
-describe 'Bot',() ->
+# ここからTwitter関連のテスト
+xdescribe 'Bot about Twitter',() ->
   beforeEach ->
     @bot = new todayBeerBot()
 
     
   it 'init test',() ->
     expect(typeof @bot).toEqual("object")
-
+    
+  
   it('should be retreive tweet list', (done) ->
     @bot.getTweet( (items) ->
       expect(items.length).toEqual 100
@@ -60,3 +62,19 @@ describe 'Bot',() ->
     currentTime = "Sat Feb 15 17:05:19 +0000 2014"
 
     expect(@bot._withinTheLimitsOfTheTime(target,currentTime)).toBe false
+
+
+# ここからRSS フィードに対する処理
+describe 'Bot about Parse RSS',() ->
+  beforeEach ->
+    @bot = new todayBeerBot()
+
+
+  it('should be POST blog entry', (done) ->
+    permalink = "http://craftbeer-fan.info/"
+    postData = "this is a test please ignore this tweet #{permalink}"  
+    @bot.tweet(postData,(data) ->
+      expect(typeof data).toEqual "object"
+      done()
+    )
+  ,8000)

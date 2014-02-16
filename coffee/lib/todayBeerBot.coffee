@@ -37,6 +37,11 @@ class todayBeerBot
         callback err
       else
         callback data
+  tweet:(postData,callback) ->
+    fakseResult =
+      name:'dummy'
+      
+    return callback fakseResult
     
   _checkIfTweet:(targetTweet) ->
     id_str = targetTweet.id_str    
