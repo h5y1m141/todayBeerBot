@@ -38,10 +38,20 @@ class todayBeerBot
       else
         callback data
   tweet:(postData,callback) ->
-    fakseResult =
-      name:'dummy'
+    # fakseResult =
+    #   name:'dummy'
+    # return callback fakseResult      
+    @twit.verifyCredentials((err, data) ->
+      # console.log data
       
-    return callback fakseResult
+    ).updateStatus postData,(err, data) ->
+      console.log "err is #{err} and data is #{data}"        
+      if err
+        callback err
+      else
+        callback data
+      
+
     
   _checkIfTweet:(targetTweet) ->
     id_str = targetTweet.id_str    
