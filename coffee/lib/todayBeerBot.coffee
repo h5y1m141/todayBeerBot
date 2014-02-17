@@ -141,7 +141,10 @@ class todayBeerBot
 
     
   _htmlToText:(rawHTML) ->
-    return "12/21 (土) 本日のビール"
+    htmlToText = require('html-to-text')
+    text = htmlToText.fromString(rawHTML,{wordwrap: 0})
+    # console.log "text is #{text.replace(/[\n\r]/g,"")}"
+    return text.replace(/[\n\r]/g,"")
     
     
 exports.todayBeerBot = todayBeerBot
