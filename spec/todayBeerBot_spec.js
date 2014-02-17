@@ -80,7 +80,7 @@
       var feedList;
       feedList = [];
       return this.bot.getRSS(feedList, function(items) {
-        expect(items.length).toEqual(20);
+        expect(items[0].rss).toEqual("http://catandcask.blogspot.com/feeds/posts/default");
         return done();
       });
     }, 8000);

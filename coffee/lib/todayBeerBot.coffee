@@ -10,10 +10,10 @@ class todayBeerBot
       access_token_key    : conf.access_token_key
       access_token_secret : conf.access_token_secret
     )
+    @feedList = conf.feedList
 
   getRSS:(feedList,callback) ->
-    items = new Array(20)
-    return callback items
+    return callback @feedList
     
   getTweet:(callback) ->
     tweets = []
