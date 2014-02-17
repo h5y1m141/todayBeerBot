@@ -77,10 +77,8 @@
       });
     }, 8000);
     return it('should be Parse RSS feed', function(done) {
-      var feedList;
-      feedList = [];
       return this.bot.getRSS(function(items) {
-        expect(items[0].rss).toEqual("http://catandcask.blogspot.com/feeds/posts/default");
+        expect(items[0].title).toBeDefined();
         return done();
       });
     }, 8000);
