@@ -67,12 +67,20 @@
     beforeEach(function() {
       return this.bot = new todayBeerBot();
     });
-    return it('should be POST blog entry', function(done) {
+    xit('should be POST blog entry', function(done) {
       var permalink, postData;
       permalink = "http://craftbeer-fan.info/";
       postData = "this is a test please ignore this tweet " + permalink;
       return this.bot.tweet(postData, function(data) {
         expect(typeof data).toEqual("object");
+        return done();
+      });
+    }, 8000);
+    return it('should be Parse RSS feed', function(done) {
+      var feedList;
+      feedList = [];
+      return this.bot.getRSS(feedList, function(items) {
+        expect(items.length).toEqual(20);
         return done();
       });
     }, 8000);

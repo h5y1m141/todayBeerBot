@@ -70,7 +70,7 @@ describe 'Bot about Parse RSS',() ->
     @bot = new todayBeerBot()
 
 
-  it('should be POST blog entry', (done) ->
+  xit('should be POST blog entry', (done) ->
     permalink = "http://craftbeer-fan.info/"
     postData = "this is a test please ignore this tweet #{permalink}"  
     @bot.tweet(postData,(data) ->
@@ -78,3 +78,12 @@ describe 'Bot about Parse RSS',() ->
       done()
     )
   ,8000)
+
+  it('should be Parse RSS feed', (done) ->
+    feedList = []
+    @bot.getRSS(feedList,(items) ->
+      expect(items.length).toEqual 20
+      done()
+    )
+  ,8000)
+    

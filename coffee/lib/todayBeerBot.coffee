@@ -11,7 +11,10 @@ class todayBeerBot
       access_token_secret : conf.access_token_secret
     )
 
-
+  getRSS:(feedList,callback) ->
+    items = new Array(20)
+    return callback items
+    
   getTweet:(callback) ->
     tweets = []
     params =
