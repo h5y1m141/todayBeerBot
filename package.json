@@ -24,6 +24,7 @@
     "underscore": "~1.6.0",
     "mecab-async": "0.0.7",
     "jasmine-node": "~1.13.1",
-    "feedparser": "~0.16.6"
+    "feedparser": "~0.16.6",
+    "html-to-text": "0.0.8"
   }
 }

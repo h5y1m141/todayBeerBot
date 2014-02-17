@@ -86,4 +86,10 @@ describe 'Bot about Parse RSS',() ->
       done()
     )
   ,8000)
-    
+
+
+  it 'should be convert html contents to text', () ->
+    rawHTML = "12/21 (土) 本日のビール <br /><br />箕面ゴッドファーザー 2 (ベルギー柚子スタウト, 限定) <br /><br />いわて蔵 MASAJIのダンディビター (イングリッシュビター, 限定) <br /><br />湘南 IPA ブラボーシングルホップ (限定) <br /><br />木曽路 ペールエール リアルエール (限定)"
+    expect(@bot._htmlToText(rawHTML)).toEqual "12/21 (土) 本日のビール"
+
+        

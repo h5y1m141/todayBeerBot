@@ -140,7 +140,8 @@ class todayBeerBot
       return false
 
     
-    
+  _htmlToText:(rawHTML) ->
+    return "12/21 (土) 本日のビール"
     
     
 exports.todayBeerBot = todayBeerBot

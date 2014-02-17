@@ -76,12 +76,17 @@
         return done();
       });
     }, 8000);
-    return it('should be Parse RSS feed', function(done) {
+    it('should be Parse RSS feed', function(done) {
       return this.bot.getRSS(function(items) {
         expect(items[0].title).toBeDefined();
         return done();
       });
     }, 8000);
+    return it('should be convert html contents to text', function() {
+      var rawHTML;
+      rawHTML = "12/21 (土) 本日のビール <br /><br />箕面ゴッドファーザー 2 (ベルギー柚子スタウト, 限定) <br /><br />いわて蔵 MASAJIのダンディビター (イングリッシュビター, 限定) <br /><br />湘南 IPA ブラボーシングルホップ (限定) <br /><br />木曽路 ペールエール リアルエール (限定)";
+      return expect(this.bot._htmlToText(rawHTML)).toEqual("12/21 (土) 本日のビール");
+    });
   });
 
 }).call(this);
