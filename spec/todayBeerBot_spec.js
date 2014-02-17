@@ -79,7 +79,7 @@
     return it('should be Parse RSS feed', function(done) {
       var feedList;
       feedList = [];
-      return this.bot.getRSS(feedList, function(items) {
+      return this.bot.getRSS(function(items) {
         expect(items[0].rss).toEqual("http://catandcask.blogspot.com/feeds/posts/default");
         return done();
       });

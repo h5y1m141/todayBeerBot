@@ -12,7 +12,7 @@ class todayBeerBot
     )
     @feedList = conf.feedList
 
-  getRSS:(feedList,callback) ->
+  getRSS:(callback) ->
     return callback @feedList
     
   getTweet:(callback) ->

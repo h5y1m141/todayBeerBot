@@ -81,7 +81,7 @@ describe 'Bot about Parse RSS',() ->
 
   it('should be Parse RSS feed', (done) ->
     feedList = []
-    @bot.getRSS(feedList,(items) ->
+    @bot.getRSS((items) ->
       expect(items[0].rss).toEqual "http://catandcask.blogspot.com/feeds/posts/default"
       done()
     )
