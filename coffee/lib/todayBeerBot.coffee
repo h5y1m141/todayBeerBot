@@ -12,10 +12,10 @@ class todayBeerBot
     )
     @feedList = conf.feedList
 
-  parseFeed:(callback) ->
+  parseFeed:(feed,callback) ->
     FeedParser = require('feedparser')
     request    = require('request')
-    req        = request(@feedList[0].rss)
+    req        = request(feed)
     that = @
     feedparser = new FeedParser()
     items = []     
