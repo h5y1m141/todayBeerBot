@@ -81,7 +81,7 @@ describe 'Bot about Parse RSS',() ->
 
   it('should be Parse RSS feed', (done) ->
 
-    @bot.getRSS((items) ->
+    @bot.parseFeed((items) ->
       expect(items[0].title).toBeDefined()
       done()
     )
