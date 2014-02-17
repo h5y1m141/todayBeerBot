@@ -10,8 +10,40 @@ class todayBeerBot
       access_token_key    : conf.access_token_key
       access_token_secret : conf.access_token_secret
     )
+    @feedList = conf.feedList
 
+  getRSS:(callback) ->
+    FeedParser = require('feedparser')
+    request    = require('request')
+    req        = request(@feedList[0].rss)
 
+    feedparser = new FeedParser()
+    items = []     
+    req.on "error", (error) ->
+      # handle any request errors
+
+    req.on "response", (res) ->
+      stream = this
+      return @emit("error", new Error("Bad status code"))  unless res.statusCode is 200
+      stream.pipe feedparser
+      return
+
+    feedparser.on "error", (error) ->
+      # always handle errors
+
+    feedparser.on "readable",() ->
+      # This is where the action is!
+      stream = this
+      meta = @meta
+      while item = stream.read()
+        # console.log item["atom:content"]
+        # console.log item.title
+        items.push item
+        
+    feedparser.on "end",() ->
+      console.log "done parse items is #{items}"
+      return callback items
+    
   getTweet:(callback) ->
     tweets = []
     params =
@@ -37,6 +69,21 @@ class todayBeerBot
         callback err
       else
         callback data
+  tweet:(postData,callback) ->
+    # fakseResult =
+    #   name:'dummy'
+    # return callback fakseResult      
+    @twit.verifyCredentials((err, data) ->
+      # console.log data
+      
+    ).updateStatus postData,(err, data) ->
+      console.log "err is #{err} and data is #{data}"        
+      if err
+        callback err
+      else
+        callback data
+      
+
     
   _checkIfTweet:(targetTweet) ->
     id_str = targetTweet.id_str    

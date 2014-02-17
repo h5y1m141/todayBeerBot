@@ -7,7 +7,7 @@
 
   todayBeerBot = require(modulePath).todayBeerBot;
 
-  describe('Bot', function() {
+  xdescribe('Bot about Twitter', function() {
     beforeEach(function() {
       return this.bot = new todayBeerBot();
     });
@@ -61,6 +61,27 @@
       currentTime = "Sat Feb 15 17:05:19 +0000 2014";
       return expect(this.bot._withinTheLimitsOfTheTime(target, currentTime)).toBe(false);
     });
+  });
+
+  describe('Bot about Parse RSS', function() {
+    beforeEach(function() {
+      return this.bot = new todayBeerBot();
+    });
+    xit('should be POST blog entry', function(done) {
+      var permalink, postData;
+      permalink = "http://craftbeer-fan.info/";
+      postData = "this is a test please ignore this tweet " + permalink;
+      return this.bot.tweet(postData, function(data) {
+        expect(typeof data).toEqual("object");
+        return done();
+      });
+    }, 8000);
+    return it('should be Parse RSS feed', function(done) {
+      return this.bot.getRSS(function(items) {
+        expect(items[0].title).toBeDefined();
+        return done();
+      });
+    }, 8000);
   });
 
 }).call(this);
