@@ -68,7 +68,7 @@ xdescribe 'Bot about Twitter',() ->
 describe 'Bot about Parse RSS',() ->
   beforeEach ->
     @bot = new todayBeerBot()
-    @feed = @feedList[0].rss
+    @feed = @bot.feedList[0].rss
 
   xit('should be POST blog entry', (done) ->
     permalink = "http://craftbeer-fan.info/"

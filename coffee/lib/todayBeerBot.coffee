@@ -38,16 +38,29 @@ class todayBeerBot
       while item = stream.read()
         # クラフトビールの開栓情報らしきものが含まれてるエントリだけ抽出する
         # console.log item["atom:content"]["#"]
-        
-        text = that._htmlToText(item["atom:content"]["#"])
-        if that._hasCraftBeerKeyword(text) is true
-          console.log "title: #{item.title}   #{text}"
-            items.push item
+        # text = that._htmlToText(item["atom:content"]["#"])
+        # pubDate = that.moment(item.pubDate).format("YYYY-MM-DD")
+        if that._checkIfFeed(item) is true
+          console.log item.title
+          items.push item
         
     feedparser.on "end",() ->
       # console.log "done parse items is #{items}"
       return callback items
-    
+      
+  _checkIfFeed:(item) ->
+    currentTime = @moment()
+    text = @_htmlToText(item["atom:content"]["#"])
+    pubDate = @moment(item.pubDate)
+    # console.log @_withinTheLimitsOfTheTime(pubDate, currentTime)
+    # 本来なら@_withinTheLimitsOfTheTime(pubDate, currentTime)実施して
+    # エントリの更新日が該当時間ないかチェックするべきだが、ブログは更新頻度が少ないため
+    # ひとまずこのメソッド内ではクラフトビール関連のキーワードがあるかどうかだけチェックする
+    if @_hasCraftBeerKeyword(text) is true
+      return true
+    else
+      return false
+      
   getTweet:(callback) ->
     tweets = []
     params =

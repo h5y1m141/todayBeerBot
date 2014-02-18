@@ -65,7 +65,8 @@
 
   describe('Bot about Parse RSS', function() {
     beforeEach(function() {
-      return this.bot = new todayBeerBot();
+      this.bot = new todayBeerBot();
+      return this.feed = this.bot.feedList[0].rss;
     });
     xit('should be POST blog entry', function(done) {
       var permalink, postData;
@@ -77,7 +78,7 @@
       });
     }, 8000);
     it('should be Parse RSS feed', function(done) {
-      return this.bot.getRSS(function(items) {
+      return this.bot.parseFeed(this.feed, function(items) {
         expect(items[0].title).toBeDefined();
         return done();
       });
