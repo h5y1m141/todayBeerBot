@@ -41,7 +41,7 @@ class todayBeerBot
         # text = that._htmlToText(item["atom:content"]["#"])
         # pubDate = that.moment(item.pubDate).format("YYYY-MM-DD")
         if that._checkIfFeed(item) is true
-          console.log item.title
+          # console.log item.title
           items.push item
         
     feedparser.on "end",() ->
@@ -50,7 +50,13 @@ class todayBeerBot
       
   _checkIfFeed:(item) ->
     currentTime = @moment()
-    text = @_htmlToText(item["atom:content"]["#"])
+    feedType = item.meta["#type"]
+    if feedType is 'atom'
+      text = @_htmlToText(item["atom:content"]["#"])
+    else if feedType is 'rss'
+      text = @_htmlToText(item["rss:description"]["#"])
+    else
+      console.log 'feed type is undefined'
     pubDate = @moment(item.pubDate)
     # console.log @_withinTheLimitsOfTheTime(pubDate, currentTime)
     # 本来なら@_withinTheLimitsOfTheTime(pubDate, currentTime)実施して
@@ -150,7 +156,7 @@ class todayBeerBot
   _withinTheLimitsOfTheTime:(target,flgTime,theLimitsOfTheTime = 3600) ->
     timeA = @moment(target)
     diffResult = @moment(flgTime).diff(timeA)/1000
-    console.log " diffResult is #{diffResult}"
+    # console.log " diffResult is #{diffResult} and theLimitsOfTheTime  is #{theLimitsOfTheTime }"
     if diffResult > 0 and diffResult < theLimitsOfTheTime  
       return true
     else
