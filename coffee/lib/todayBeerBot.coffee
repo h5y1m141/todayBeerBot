@@ -12,11 +12,11 @@ class todayBeerBot
     )
     @feedList = conf.feedList
 
-  getRSS:(callback) ->
+  parseFeed:(feed,callback) ->
     FeedParser = require('feedparser')
     request    = require('request')
-    req        = request(@feedList[0].rss)
-
+    req        = request(feed)
+    that = @
     feedparser = new FeedParser()
     items = []     
     req.on "error", (error) ->
@@ -36,14 +36,31 @@ class todayBeerBot
       stream = this
       meta = @meta
       while item = stream.read()
-        # console.log item["atom:content"]
-        # console.log item.title
-        items.push item
+        # クラフトビールの開栓情報らしきものが含まれてるエントリだけ抽出する
+        # console.log item["atom:content"]["#"]
+        # text = that._htmlToText(item["atom:content"]["#"])
+        # pubDate = that.moment(item.pubDate).format("YYYY-MM-DD")
+        if that._checkIfFeed(item) is true
+          console.log item.title
+          items.push item
         
     feedparser.on "end",() ->
-      console.log "done parse items is #{items}"
+      # console.log "done parse items is #{items}"
       return callback items
-    
+      
+  _checkIfFeed:(item) ->
+    currentTime = @moment()
+    text = @_htmlToText(item["atom:content"]["#"])
+    pubDate = @moment(item.pubDate)
+    # console.log @_withinTheLimitsOfTheTime(pubDate, currentTime)
+    # 本来なら@_withinTheLimitsOfTheTime(pubDate, currentTime)実施して
+    # エントリの更新日が該当時間ないかチェックするべきだが、ブログは更新頻度が少ないため
+    # ひとまずこのメソッド内ではクラフトビール関連のキーワードがあるかどうかだけチェックする
+    if @_hasCraftBeerKeyword(text) is true
+      return true
+    else
+      return false
+      
   getTweet:(callback) ->
     tweets = []
     params =
@@ -140,7 +157,11 @@ class todayBeerBot
       return false
 
     
-    
+  _htmlToText:(rawHTML) ->
+    htmlToText = require('html-to-text')
+    text = htmlToText.fromString(rawHTML,{wordwrap: 0})
+    # console.log "text is #{text.replace(/[\n\r]/g,"")}"
+    return text.replace(/[\n\r]/g,"")
     
     
 exports.todayBeerBot = todayBeerBot

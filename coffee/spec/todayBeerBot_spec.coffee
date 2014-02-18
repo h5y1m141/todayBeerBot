@@ -68,7 +68,7 @@ xdescribe 'Bot about Twitter',() ->
 describe 'Bot about Parse RSS',() ->
   beforeEach ->
     @bot = new todayBeerBot()
-
+    @feed = @bot.feedList[0].rss
 
   xit('should be POST blog entry', (done) ->
     permalink = "http://craftbeer-fan.info/"
@@ -81,9 +81,15 @@ describe 'Bot about Parse RSS',() ->
 
   it('should be Parse RSS feed', (done) ->
 
-    @bot.getRSS((items) ->
+    @bot.parseFeed(@feed,(items) ->
       expect(items[0].title).toBeDefined()
       done()
     )
   ,8000)
-    
+
+
+  it 'should be convert html contents to text', () ->
+    rawHTML = "12/21 (土) 本日のビール <br /><br />箕面ゴッドファーザー 2 (ベルギー柚子スタウト, 限定) <br /><br />いわて蔵 MASAJIのダンディビター (イングリッシュビター, 限定) <br /><br />湘南 IPA ブラボーシングルホップ (限定) <br /><br />木曽路 ペールエール リアルエール (限定)"
+    expect(@bot._htmlToText(rawHTML)).toEqual "12/21(土)本日のビール箕面ゴッドファーザー2(ベルギー柚子スタウト,限定)いわて蔵MASAJIのダンディビター(イングリッシュビター,限定)湘南IPAブラボーシングルホップ(限定)木曽路ペールエールリアルエール(限定)"
+
+        

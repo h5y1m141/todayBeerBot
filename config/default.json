@@ -7,6 +7,11 @@
         {
             "name":"英国パブ The Cat & Cask Tavern",
             "rss":"http://catandcask.blogspot.com/feeds/posts/default"
+        },
+        {
+            "name":"Sun2Diner",
+            "rss":"http://rssblog.ameba.jp/sun2diner/rss20.xml"
         }
+
     ]
 }
