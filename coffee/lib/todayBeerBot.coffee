@@ -2,6 +2,9 @@ class todayBeerBot
   constructor: () ->
     twitter = require('ntwitter')
     conf = require('config')
+    Bitly = require("bitly")
+    @bitly = new Bitly("h5y1m141", conf.bitly)
+    
     @_ = require('underscore')    
     @moment = require('moment')
     @twit = new twitter(
@@ -41,16 +44,44 @@ class todayBeerBot
         # text = that._htmlToText(item["atom:content"]["#"])
         # pubDate = that.moment(item.pubDate).format("YYYY-MM-DD")
         if that._checkIfFeed(item) is true
-          console.log item.title
+          # console.log item.title
           items.push item
         
     feedparser.on "end",() ->
       # console.log "done parse items is #{items}"
       return callback items
       
+  postBlogEntry:(item,callback)->
+    feedType = item.meta["#type"]
+    that = @
+    
+    if feedType is 'atom'
+      text = @_htmlToText(item["atom:content"]["#"])
+    else
+      text = @_htmlToText(item["rss:description"]["#"])
+    base_url = item.link  
+    @bitly.shorten base_url, (err, response) ->
+      if err
+        # bitlyで短縮されたURLが取得できてないので、その場合にはブログの本文抽出あきらめる
+        postData = "更新日#{that.moment(item.pubDate).format("MM-DD")}の「#{item.meta.title}」の情報。くわしくはWebを→ " + base_url
+      else
+        short_url = response.data.url
+        postData = "更新日#{that.moment(item.pubDate).format("MM-DD")}の「#{item.meta.title}」の情報： #{text}".substring(0, 110) + short_url
+      # console.log "#{postData} #{short_url}"
+
+      that.tweet postData ,(data) ->
+        # console.log data
+        return callback data
+          
   _checkIfFeed:(item) ->
     currentTime = @moment()
-    text = @_htmlToText(item["atom:content"]["#"])
+    feedType = item.meta["#type"]
+    if feedType is 'atom'
+      text = @_htmlToText(item["atom:content"]["#"])
+    else if feedType is 'rss'
+      text = @_htmlToText(item["rss:description"]["#"])
+    else
+      console.log 'feed type is undefined'
     pubDate = @moment(item.pubDate)
     # console.log @_withinTheLimitsOfTheTime(pubDate, currentTime)
     # 本来なら@_withinTheLimitsOfTheTime(pubDate, currentTime)実施して
@@ -150,7 +181,7 @@ class todayBeerBot
   _withinTheLimitsOfTheTime:(target,flgTime,theLimitsOfTheTime = 3600) ->
     timeA = @moment(target)
     diffResult = @moment(flgTime).diff(timeA)/1000
-    console.log " diffResult is #{diffResult}"
+    # console.log " diffResult is #{diffResult} and theLimitsOfTheTime  is #{theLimitsOfTheTime }"
     if diffResult > 0 and diffResult < theLimitsOfTheTime  
       return true
     else
