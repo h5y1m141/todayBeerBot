@@ -72,7 +72,10 @@ class todayBeerBot
       that.tweet postData ,(data) ->
         # console.log data
         return callback data
-          
+        
+  checkIfFeedAlreadyPostOrNot:(targetFeedURL) ->
+    return true
+            
   _checkIfFeed:(item) ->
     currentTime = @moment()
     feedType = item.meta["#type"]
