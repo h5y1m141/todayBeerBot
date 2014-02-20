@@ -68,7 +68,9 @@
 path = require("path")
 modulePath = path.resolve(__dirname, "lib/todayBeerBot.js")
 todayBeerBot = require(modulePath).todayBeerBot
+conf = require('config')
 moment = require("moment")
+
 bot = new todayBeerBot()
 feedList = bot.feedList
 
@@ -77,19 +79,8 @@ for feed in feedList
   bot.parseFeed feed.rss,(items) ->
     if items.length isnt 0
       for item in items
-        # feedの更新日付が1日以内だったら処理をする
         currentTime = moment()
         flg = bot._withinTheLimitsOfTheTime(item.pubDate,currentTime,900000)
         if flg is true
-          
-          feedType = item.meta["#type"]
-          if feedType is 'atom'
-            text = bot._htmlToText(item["atom:content"]["#"])
-          else
-            text = bot._htmlToText(item["rss:description"]["#"])
-
-          postData = "更新日#{moment(item.pubDate).format("MM-DD")}の「#{item.meta.title}」の情報： #{text}".substring(0, 140)
-          console.log postData
-          bot.tweet postData,(data) ->
-            console.log data
-    
+          bot.postBlogEntry item,(result) ->
+            console.log result
