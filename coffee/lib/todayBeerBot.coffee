@@ -4,7 +4,7 @@ class todayBeerBot
     conf = require('config')
     Bitly = require("bitly")
     @bitly = new Bitly("h5y1m141", conf.bitly)
-    
+    @mongolabkey = conf.mongolabkey    
     @_ = require('underscore')    
     @moment = require('moment')
     @twit = new twitter(
@@ -73,9 +73,17 @@ class todayBeerBot
         # console.log data
         return callback data
         
-  checkIfFeedAlreadyPostOrNot:(targetFeedURL) ->
-    return true
-            
+  checkIfFeedAlreadyPostOrNot:(targetFeedURL,callback) ->
+    mongo = require('mongodb')
+    uri = "mongodb://craftbeerfan:orih6254@ds033639.mongolab.com:33639/craftbeerfan"
+    mongo.connect uri, {}, (error, db) ->
+      db.collection("shop").find().toArray (err,items) ->
+        for item in items
+          if item.permalink is targetFeedURL
+            callback true
+
+
+           
   _checkIfFeed:(item) ->
     currentTime = @moment()
     feedType = item.meta["#type"]
