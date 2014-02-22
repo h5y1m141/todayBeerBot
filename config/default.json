@@ -4,6 +4,10 @@
     "access_token_key"    : "1709423564-e6YDNZeXO4gdT3CRixdOOPIrvUE2RyAQcSxmAGg",
     "access_token_secret" : "89GLLzyAjgrxAobZs0on5HiPzoXsLU4p0URtRZq1wGijl",
     "bitly":"R_dfe8c131517b6f4798a4044d8f6aa2d4",
+    "mongodb":{
+        "db":"craftbeerfan",
+        "password":"orih6254"
+    },
     "feedList":[
         {
             "name":"英国パブ The Cat & Cask Tavern",
