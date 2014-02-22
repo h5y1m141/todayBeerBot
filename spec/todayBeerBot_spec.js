@@ -95,7 +95,7 @@
         expect(result).toBe(true);
         return done();
       });
-    }, 5000);
+    }, 8000);
   });
 
 }).call(this);

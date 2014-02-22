@@ -73,16 +73,36 @@ class todayBeerBot
         # console.log data
         return callback data
         
-  checkIfFeedAlreadyPostOrNot:(targetFeedURL,callback) ->
+  checkIfFeedAlreadyPostOrNot:(targetFeedURL,name,callback) ->
     mongo = require('mongodb')
-    
     mongo.connect @uri, {}, (error, db) ->
-      db.collection("shop").find().toArray (err,items) ->
-        for item in items
-          if item.permalink is targetFeedURL
-            callback true
+      throw error if error
+      param = {"permalink":targetFeedURL}
 
+      db.collection("shop").find(param).toArray (err,items) ->
+        throw err if err
+        db.close()
+        if items is null
+          return
+        else 
+          return callback items
 
+      return
+            
+  feedAlreadyPost:(permalink,name,callback) ->
+    mongo = require('mongodb')
+    mongo.connect @uri, {}, (error, db) ->
+      throw error if error
+      param = 
+        permalink : permalink
+        name      : name
+      setTimeout (->
+        db.collection("shop").insert (param), (err,docs) ->
+          throw err if err
+          db.close()
+          console.log docs
+          callback docs
+      ), 1000
            
   _checkIfFeed:(item) ->
     currentTime = @moment()
