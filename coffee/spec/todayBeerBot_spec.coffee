@@ -2,14 +2,16 @@ path = require("path")
 modulePath = path.resolve(__dirname, "../lib/todayBeerBot.js")
 todayBeerBot = require(modulePath).todayBeerBot
 
-describe 'Bot',() ->
+# ここからTwitter関連のテスト
+xdescribe 'Bot about Twitter',() ->
   beforeEach ->
     @bot = new todayBeerBot()
 
     
   it 'init test',() ->
     expect(typeof @bot).toEqual("object")
-
+    
+  
   it('should be retreive tweet list', (done) ->
     @bot.getTweet( (items) ->
       expect(items.length).toEqual 100
@@ -60,3 +62,41 @@ describe 'Bot',() ->
     currentTime = "Sat Feb 15 17:05:19 +0000 2014"
 
     expect(@bot._withinTheLimitsOfTheTime(target,currentTime)).toBe false
+
+
+# ここからRSS フィードに対する処理
+describe 'Bot about Parse RSS',() ->
+  beforeEach ->
+    @bot = new todayBeerBot()
+    @feed = @bot.feedList[0].rss
+
+  xit('should be POST blog entry', (done) ->
+    permalink = "http://craftbeer-fan.info/"
+    postData = "this is a test please ignore this tweet #{permalink}"  
+    @bot.tweet(postData,(data) ->
+      expect(typeof data).toEqual "object"
+      done()
+    )
+  ,8000)
+
+  it('should be Parse RSS feed', (done) ->
+
+    @bot.parseFeed(@feed,(items) ->
+      expect(items[0].title).toBeDefined()
+      done()
+    )
+  ,8000)
+
+
+  it 'should be convert html contents to text', () ->
+    rawHTML = "12/21 (土) 本日のビール <br /><br />箕面ゴッドファーザー 2 (ベルギー柚子スタウト, 限定) <br /><br />いわて蔵 MASAJIのダンディビター (イングリッシュビター, 限定) <br /><br />湘南 IPA ブラボーシングルホップ (限定) <br /><br />木曽路 ペールエール リアルエール (限定)"
+    expect(@bot._htmlToText(rawHTML)).toEqual "12/21(土)本日のビール箕面ゴッドファーザー2(ベルギー柚子スタウト,限定)いわて蔵MASAJIのダンディビター(イングリッシュビター,限定)湘南IPAブラボーシングルホップ(限定)木曽路ペールエールリアルエール(限定)"
+
+        
+  it('should be return true flg after the target feed already is posted', (done) ->
+    targetFeedURL = "http://ameblo.jp/sun2diner/entry-11773725674.html"
+    @bot.checkIfFeedAlreadyPostOrNot(targetFeedURL, (result) ->
+      expect(result).toBe true
+      done()
+    )  
+  ,8000 )

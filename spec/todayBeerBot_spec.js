@@ -7,7 +7,7 @@
 
   todayBeerBot = require(modulePath).todayBeerBot;
 
-  describe('Bot', function() {
+  xdescribe('Bot about Twitter', function() {
     beforeEach(function() {
       return this.bot = new todayBeerBot();
     });
@@ -61,6 +61,41 @@
       currentTime = "Sat Feb 15 17:05:19 +0000 2014";
       return expect(this.bot._withinTheLimitsOfTheTime(target, currentTime)).toBe(false);
     });
+  });
+
+  describe('Bot about Parse RSS', function() {
+    beforeEach(function() {
+      this.bot = new todayBeerBot();
+      return this.feed = this.bot.feedList[0].rss;
+    });
+    xit('should be POST blog entry', function(done) {
+      var permalink, postData;
+      permalink = "http://craftbeer-fan.info/";
+      postData = "this is a test please ignore this tweet " + permalink;
+      return this.bot.tweet(postData, function(data) {
+        expect(typeof data).toEqual("object");
+        return done();
+      });
+    }, 8000);
+    it('should be Parse RSS feed', function(done) {
+      return this.bot.parseFeed(this.feed, function(items) {
+        expect(items[0].title).toBeDefined();
+        return done();
+      });
+    }, 8000);
+    it('should be convert html contents to text', function() {
+      var rawHTML;
+      rawHTML = "12/21 (土) 本日のビール <br /><br />箕面ゴッドファーザー 2 (ベルギー柚子スタウト, 限定) <br /><br />いわて蔵 MASAJIのダンディビター (イングリッシュビター, 限定) <br /><br />湘南 IPA ブラボーシングルホップ (限定) <br /><br />木曽路 ペールエール リアルエール (限定)";
+      return expect(this.bot._htmlToText(rawHTML)).toEqual("12/21(土)本日のビール箕面ゴッドファーザー2(ベルギー柚子スタウト,限定)いわて蔵MASAJIのダンディビター(イングリッシュビター,限定)湘南IPAブラボーシングルホップ(限定)木曽路ペールエールリアルエール(限定)");
+    });
+    return it('should be return true flg after the target feed already is posted', function(done) {
+      var targetFeedURL;
+      targetFeedURL = "http://ameblo.jp/sun2diner/entry-11773725674.html";
+      return this.bot.checkIfFeedAlreadyPostOrNot(targetFeedURL, function(result) {
+        expect(result).toBe(true);
+        return done();
+      });
+    }, 8000);
   });
 
 }).call(this);
