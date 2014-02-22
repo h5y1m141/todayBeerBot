@@ -93,3 +93,10 @@ describe 'Bot about Parse RSS',() ->
     expect(@bot._htmlToText(rawHTML)).toEqual "12/21(土)本日のビール箕面ゴッドファーザー2(ベルギー柚子スタウト,限定)いわて蔵MASAJIのダンディビター(イングリッシュビター,限定)湘南IPAブラボーシングルホップ(限定)木曽路ペールエールリアルエール(限定)"
 
         
+  it('should be return true flg after the target feed already is posted', (done) ->
+    targetFeedURL = "http://ameblo.jp/sun2diner/entry-11773725674.html"
+    @bot.checkIfFeedAlreadyPostOrNot(targetFeedURL, (result) ->
+      expect(result).toBe true
+      done()
+    )  
+  ,8000 )

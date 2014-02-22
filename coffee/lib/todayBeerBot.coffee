@@ -4,7 +4,7 @@ class todayBeerBot
     conf = require('config')
     Bitly = require("bitly")
     @bitly = new Bitly("h5y1m141", conf.bitly)
-    
+    @uri = "mongodb://#{conf.mongodb.db}:#{conf.mongodb.password}@ds033639.mongolab.com:33639/craftbeerfan"    
     @_ = require('underscore')    
     @moment = require('moment')
     @twit = new twitter(
@@ -70,9 +70,40 @@ class todayBeerBot
       # console.log "#{postData} #{short_url}"
 
       that.tweet postData ,(data) ->
-        # console.log data
+        console.log "postData is done data is #{data}"
         return callback data
-          
+        
+  checkIfFeedAlreadyPostOrNot:(targetFeedURL,callback) ->
+    mongo = require('mongodb')
+    mongo.connect @uri, {}, (error, db) ->
+      throw error if error
+      param = {"permalink":targetFeedURL}
+
+      db.collection("shop").find(param).toArray (err,items) ->
+        throw err if err
+        db.close()
+        if items is null
+          return callback []
+        else 
+          return callback items
+
+      return
+            
+  feedAlreadyPost:(permalink,name,callback) ->
+    mongo = require('mongodb')
+    mongo.connect @uri, {}, (error, db) ->
+      throw error if error
+      param = 
+        permalink : permalink
+        name      : name
+      setTimeout (->
+        db.collection("shop").insert (param), (err,docs) ->
+          throw err if err
+          db.close()
+          console.log docs
+          callback docs
+      ), 1000
+           
   _checkIfFeed:(item) ->
     currentTime = @moment()
     feedType = item.meta["#type"]
