@@ -15,6 +15,23 @@
 
   feedList = bot.feedList;
 
+  bot.getTweet(function(items) {
+    var check, item, _i, _len;
+    if (items.length !== 0) {
+      for (_i = 0, _len = items.length; _i < _len; _i++) {
+        item = items[_i];
+        check = (function(tweet) {
+          if (bot._checkIfTweet(tweet) === true) {
+            return bot.retweet(tweet.id_str, function(data) {
+              return console.log("done text is " + data.text);
+            });
+          }
+        })(item);
+      }
+      return console.log("done");
+    }
+  });
+
   for (_i = 0, _len = feedList.length; _i < _len; _i++) {
     feed = feedList[_i];
     console.log(feed.rss);
