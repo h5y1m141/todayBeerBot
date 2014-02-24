@@ -86,6 +86,14 @@ describe 'Bot about Parse RSS',() ->
       done()
     )
   ,8000)
+  
+  it('should be Parse RSS feed from ACS', (done) ->
+
+    @bot.parseFeedFromACS( (items) ->
+      expect(items[0].name).toBeDefined()
+      done()
+    )
+  ,8000)
 
 
   it 'should be convert html contents to text', () ->
@@ -96,7 +104,7 @@ describe 'Bot about Parse RSS',() ->
   it('should be return true flg after the target feed already is posted', (done) ->
     targetFeedURL = "http://ameblo.jp/sun2diner/entry-11773725674.html"
     @bot.checkIfFeedAlreadyPostOrNot(targetFeedURL, (result) ->
-      expect(result).toBe true
+      expect(result[0].permalink).toEqual targetFeedURL
       done()
     )  
   ,8000 )

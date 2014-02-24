@@ -83,6 +83,12 @@
         return done();
       });
     }, 8000);
+    it('should be Parse RSS feed from ACS', function(done) {
+      return this.bot.parseFeedFromACS(function(items) {
+        expect(items[0].name).toBeDefined();
+        return done();
+      });
+    }, 8000);
     it('should be convert html contents to text', function() {
       var rawHTML;
       rawHTML = "12/21 (土) 本日のビール <br /><br />箕面ゴッドファーザー 2 (ベルギー柚子スタウト, 限定) <br /><br />いわて蔵 MASAJIのダンディビター (イングリッシュビター, 限定) <br /><br />湘南 IPA ブラボーシングルホップ (限定) <br /><br />木曽路 ペールエール リアルエール (限定)";
@@ -92,7 +98,7 @@
       var targetFeedURL;
       targetFeedURL = "http://ameblo.jp/sun2diner/entry-11773725674.html";
       return this.bot.checkIfFeedAlreadyPostOrNot(targetFeedURL, function(result) {
-        expect(result).toBe(true);
+        expect(result[0].permalink).toEqual(targetFeedURL);
         return done();
       });
     }, 8000);

@@ -51,6 +51,12 @@ class todayBeerBot
       # console.log "done parse items is #{items}"
       return callback items
       
+  parseFeedFromACS:(callback) ->
+    callback( [
+      name:"dummy"
+    ])
+    
+          
   postBlogEntry:(item,callback)->
     feedType = item.meta["#type"]
     that = @
