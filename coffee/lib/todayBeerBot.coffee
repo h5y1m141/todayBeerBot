@@ -141,7 +141,7 @@ class todayBeerBot
   retweet:(id_str,callback) ->
     @twit.verifyCredentials((err, data) ->
       # console.log data
-      
+
     ).retweetStatus id_str,(err, data) ->
       console.log "err is #{err} and data is #{data}"        
       if err
