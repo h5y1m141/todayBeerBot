@@ -88,12 +88,10 @@ describe 'Bot about Parse RSS',() ->
   ,8000)
   
   it('should be Parse RSS feed from ACS', (done) ->
-    # 目黒区上目黒2-43-11の緯度経度が以下。この住所はSun2diner
-    # のもの
-    latitude = 35.640902
-    longitude = 139.694527
-    
-    @bot.parseFeedFromACS(latitude,longitude, (items) ->
+
+    @bot.parseFeedFromACS( (items) ->
+      console.log items[0].name
+      console.log items[1].name
       expect(items[0].name).toBeDefined()
       # expect(items[0].name).toEqual "Sun2Diner"
       done()

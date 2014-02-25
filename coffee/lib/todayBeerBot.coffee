@@ -55,15 +55,14 @@ class todayBeerBot
       # console.log "done parse items is #{items}"
       return callback items
       
-  parseFeedFromACS:(latitude,longitude,callback) ->
+  parseFeedFromACS:(callback) ->
 
     @ACS.Places.query
       page: 1
-      per_page: 100
+      per_page: 500
       where:
-        lnglat:
-          $nearSphere:[longitude,latitude] 
-          $maxDistance: 0.01
+        feed:{"$ne":"null"}
+
     ,(e) ->
       if e.success
         callback e.places
