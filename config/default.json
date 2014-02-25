@@ -2,6 +2,14 @@
     "consumer_key"        : "NQf4jTAuubdoXBnXwo3TsA",
     "consumer_secret"     : "gtwnla3vTNGZqq0iOa7Bb6xPNaZaZWot4dxoK5I34",
     "access_token_key"    : "1709423564-e6YDNZeXO4gdT3CRixdOOPIrvUE2RyAQcSxmAGg",
+    "acs":{
+        "development":"kx4Bbuh4jiCk6AMrSk4HG8jo2LKJ8zQD",
+        "production":"1CLgMNt8m6Fw2K96BnU80rlfXSoxllAU",
+        "user":{
+            "id":"h5y1m141",
+            "password":"orih6254"
+        }
+    },
     "access_token_secret" : "89GLLzyAjgrxAobZs0on5HiPzoXsLU4p0URtRZq1wGijl",
     "bitly":"R_dfe8c131517b6f4798a4044d8f6aa2d4",
     "mongodb":{
