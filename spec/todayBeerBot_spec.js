@@ -84,7 +84,10 @@
       });
     }, 8000);
     it('should be Parse RSS feed from ACS', function(done) {
-      return this.bot.parseFeedFromACS(function(items) {
+      var latitude, longitude;
+      latitude = 35.640902;
+      longitude = 139.694527;
+      return this.bot.parseFeedFromACS(latitude, longitude, function(items) {
         expect(items[0].name).toBeDefined();
         return done();
       });

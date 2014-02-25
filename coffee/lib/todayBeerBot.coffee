@@ -4,6 +4,10 @@ class todayBeerBot
     conf = require('config')
     Bitly = require("bitly")
     @bitly = new Bitly("h5y1m141", conf.bitly)
+    @ACS = require('acs-node')
+    @loginID = conf.acs.user.id
+    @loginPasswd = conf.acs.user.password
+    @ACS.init(conf.acs.production)    
     @uri = "mongodb://#{conf.mongodb.db}:#{conf.mongodb.password}@ds033639.mongolab.com:33639/craftbeerfan"    
     @_ = require('underscore')    
     @moment = require('moment')
@@ -51,11 +55,19 @@ class todayBeerBot
       # console.log "done parse items is #{items}"
       return callback items
       
-  parseFeedFromACS:(callback) ->
-    callback( [
-      name:"dummy"
-    ])
-    
+  parseFeedFromACS:(latitude,longitude,callback) ->
+
+    @ACS.Places.query
+      page: 1
+      per_page: 100
+      where:
+        lnglat:
+          $nearSphere:[longitude,latitude] 
+          $maxDistance: 0.01
+    ,(e) ->
+      if e.success
+        callback e.places
+
           
   postBlogEntry:(item,callback)->
     feedType = item.meta["#type"]
@@ -231,5 +243,18 @@ class todayBeerBot
     # console.log "text is #{text.replace(/[\n\r]/g,"")}"
     return text.replace(/[\n\r]/g,"")
     
+  _login:(callback) ->
+    data =
+      login: @loginID
+      password: @loginPasswd
+    
+    @ACS.Users.login(data, (response) =>
+      
+      if response.success
+        # @loggerRequest.info(response.meta.session_id)
+        callback(response.meta.session_id)
+      else
+        @loggerRequest.info "Error to login: " + response.message
+    )            
     
 exports.todayBeerBot = todayBeerBot
