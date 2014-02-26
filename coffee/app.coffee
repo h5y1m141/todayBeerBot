@@ -26,14 +26,10 @@ bot.parseFeedFromACS((items) ->
       bot.parseFeed obj.custom_fields.feed,(items) ->
         if items.length isnt 0
           for item in items
-            targetFeedURL = item.link
-            # Tweet済かどうかチェックして、かつ、取得したFeedの更新日が指定の時間内に
-            # 収まってるかどうか書くにした上で投稿する
-            permalink = item.link
-            name = item.meta.title
             # クロージャー使わないと、ループが回りきった所でcheckIfFeedAlreadyPostOrNotに
             # 値が渡されてしまうためこのように処理する
             func = ((permalink,name,item)->
+              console.log "start func() permalink is #{permalink}"
               bot.checkIfFeedAlreadyPostOrNot(permalink,(result) ->
                 if result.length is 0
                   console.log "start #{permalink} and #{item.pubDate}"
