@@ -38,15 +38,13 @@
       _results.push(getFeed = (function(obj) {
         console.log(obj.name + obj.custom_fields.feed);
         return bot.parseFeed(obj.custom_fields.feed, function(items) {
-          var func, name, permalink, targetFeedURL, _j, _len1, _results1;
+          var func, _j, _len1, _results1;
           if (items.length !== 0) {
             _results1 = [];
             for (_j = 0, _len1 = items.length; _j < _len1; _j++) {
               item = items[_j];
-              targetFeedURL = item.link;
-              permalink = item.link;
-              name = item.meta.title;
               _results1.push(func = (function(permalink, name, item) {
+                console.log("start func() permalink is " + permalink);
                 return bot.checkIfFeedAlreadyPostOrNot(permalink, function(result) {
                   var currentTime, flg;
                   if (result.length === 0) {

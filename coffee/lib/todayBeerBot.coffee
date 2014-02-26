@@ -22,7 +22,11 @@ class todayBeerBot
   parseFeed:(feed,callback) ->
     FeedParser = require('feedparser')
     request    = require('request')
-    req        = request(feed)
+    options =
+      url:feed
+      headers:{
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11'}
+    req  = request(options)
     that = @
     feedparser = new FeedParser()
     items = []     
@@ -92,6 +96,7 @@ class todayBeerBot
         
   checkIfFeedAlreadyPostOrNot:(targetFeedURL,callback) ->
     mongo = require('mongodb')
+    console.log "connect mongo uri is #{@uri}"
     mongo.connect @uri, {}, (error, db) ->
       throw error if error
       param = {"permalink":targetFeedURL}
@@ -130,6 +135,8 @@ class todayBeerBot
       text = @_htmlToText(item["rss:description"]["#"])
     else
       console.log 'feed type is undefined'
+      text = 'feed type is undefined'
+
     pubDate = @moment(item.pubDate)
     # console.log @_withinTheLimitsOfTheTime(pubDate, currentTime)
     # 本来なら@_withinTheLimitsOfTheTime(pubDate, currentTime)実施して
@@ -199,6 +206,7 @@ class todayBeerBot
       '本日',
       '開栓',
       '開栓情報',
+      '樽生',      
       '限定ビール',    
       'ペールエール',
       'IPA',
