@@ -65,7 +65,7 @@ xdescribe 'Bot about Twitter',() ->
 
 
 # ここからRSS フィードに対する処理
-describe 'Bot about Parse RSS',() ->
+xdescribe 'Bot about Parse RSS',() ->
   beforeEach ->
     @bot = new todayBeerBot()
     @feed = @bot.feedList[0].rss
@@ -111,3 +111,16 @@ describe 'Bot about Parse RSS',() ->
       done()
     )  
   ,8000 )
+  
+# ここから開栓情報をACSにも登録する処理についてのテスト
+describe 'ACS',() ->
+  beforeEach ->
+    @bot = new todayBeerBot()
+    
+  it '開栓情報を登録できる',(done) ->
+    placdID = "520188b34cd6620ae80abc6b" # UNION BAKERY
+    @bot.postBeerInfoToACS(placdID,(result) ->
+      expect(result.success).toBe true
+      done()
+    )
+  ,8000

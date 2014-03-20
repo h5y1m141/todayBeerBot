@@ -187,6 +187,11 @@ class todayBeerBot
         callback data
       
 
+  postBeerInfoToACS:(placeID,callback) ->
+    result =
+      success:true
+      
+    callback result
     
   _checkIfTweet:(targetTweet) ->
     id_str = targetTweet.id_str    
