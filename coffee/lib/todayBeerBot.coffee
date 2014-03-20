@@ -188,10 +188,20 @@ class todayBeerBot
       
 
   postBeerInfoToACS:(placeID,callback) ->
-    result =
-      success:true
-      
-    callback result
+    data =
+      login: @loginID
+      password: @loginPasswd
+    
+    @ACS.Users.login(data, (response) =>
+      if response.success
+        @ACS.Statuses.create
+          place_id:placeID
+          session_id:response.meta.session_id
+          message:"test"
+        , (result) ->
+          console.log result
+          callback result 
+    )
     
   _checkIfTweet:(targetTweet) ->
     id_str = targetTweet.id_str    
