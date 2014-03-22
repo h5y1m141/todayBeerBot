@@ -43,7 +43,7 @@
             _results1 = [];
             for (_j = 0, _len1 = items.length; _j < _len1; _j++) {
               item = items[_j];
-              _results1.push(func = (function(permalink, name, item) {
+              _results1.push(func = (function(permalink, name, item, placeID) {
                 console.log("start func() permalink is " + permalink);
                 return bot.checkIfFeedAlreadyPostOrNot(permalink, function(result) {
                   var currentTime, flg;
@@ -55,7 +55,7 @@
                     if (flg === true) {
                       return bot.feedAlreadyPost(permalink, name, function(docs) {
                         console.log("feedAlreadyPost docs is " + docs);
-                        return bot.postBlogEntry(item, function(result) {
+                        return bot.postBlogEntry(item, placeID, function(result) {
                           return console.log(result);
                         });
                       });
@@ -64,7 +64,7 @@
                     return console.log("" + result[0].permalink + " is already post");
                   }
                 });
-              })(item.link, item.meta.title, item));
+              })(item.link, item.meta.title, item, obj.id));
             }
             return _results1;
           } else {

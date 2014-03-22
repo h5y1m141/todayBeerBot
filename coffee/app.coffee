@@ -28,7 +28,7 @@ bot.parseFeedFromACS((items) ->
           for item in items
             # クロージャー使わないと、ループが回りきった所でcheckIfFeedAlreadyPostOrNotに
             # 値が渡されてしまうためこのように処理する
-            func = ((permalink,name,item)->
+            func = ((permalink,name,item,placeID)->
               console.log "start func() permalink is #{permalink}"
               bot.checkIfFeedAlreadyPostOrNot(permalink,(result) ->
                 if result.length is 0
@@ -40,7 +40,7 @@ bot.parseFeedFromACS((items) ->
                   if flg is true
                     bot.feedAlreadyPost(permalink,name,(docs) ->
                       console.log "feedAlreadyPost docs is #{docs}"
-                      bot.postBlogEntry item,(result) ->
+                      bot.postBlogEntry item,placeID,(result) ->
                         console.log result
                     )
                 else  
@@ -48,7 +48,7 @@ bot.parseFeedFromACS((items) ->
     
               )
               
-            )(item.link,item.meta.title,item)  
+            )(item.link,item.meta.title,item,obj.id)  
         else    
           console.log "done"
       
