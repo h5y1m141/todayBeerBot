@@ -72,7 +72,7 @@ class todayBeerBot
         callback e.places
 
           
-  postBlogEntry:(item,callback)->
+  postBlogEntry:(item,placeID,callback)->
     feedType = item.meta["#type"]
     that = @
     
@@ -90,13 +90,17 @@ class todayBeerBot
         postData = "更新日#{that.moment(item.pubDate).format("MM-DD")}の「#{item.meta.title}」の情報： #{text}".substring(0, 110) + short_url
       # console.log "#{postData} #{short_url}"
 
+      # ACSのStatusesオブジェクトに該当情報をPostする
+      that.postBeerInfoToACS placeID,postData,(result) ->
+        console.log "postBeerInfoToACS success flg is #{result.success}"
+      
       that.tweet postData ,(data) ->
         console.log "postData is done data is #{data}"
         return callback data
         
   checkIfFeedAlreadyPostOrNot:(targetFeedURL,callback) ->
     mongo = require('mongodb')
-    console.log "connect mongo uri is #{@uri}"
+    # console.log "connect mongo uri is #{@uri}"
     mongo.connect @uri, {}, (error, db) ->
       throw error if error
       param = {"permalink":targetFeedURL}
@@ -187,7 +191,7 @@ class todayBeerBot
         callback data
       
 
-  postBeerInfoToACS:(placeID,callback) ->
+  postBeerInfoToACS:(placeID,message,callback) ->
     data =
       login: @loginID
       password: @loginPasswd
@@ -197,7 +201,7 @@ class todayBeerBot
         @ACS.Statuses.create
           place_id:placeID
           session_id:response.meta.session_id
-          message:"test"
+          message:message
         , (result) ->
           console.log result
           callback result 
@@ -226,6 +230,10 @@ class todayBeerBot
       'ペールエール',
       'IPA',
       'エール',
+      'Ale',
+      'Today',
+      'taps',
+      'Pale Ale',
       '箕面ビール',
       '箕面',
       'COECO',

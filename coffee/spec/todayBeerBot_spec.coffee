@@ -119,8 +119,9 @@ describe 'ACS',() ->
     
   it '開栓情報を登録できる',(done) ->
     placdID = "520188b34cd6620ae80abc6b" # UNION BAKERY
-    @bot.postBeerInfoToACS(placdID,(result) ->
+    message = 'test'
+    @bot.postBeerInfoToACS placdID,message,(result) ->
       expect(result.success).toBe true
       done()
-    )
+
   ,8000

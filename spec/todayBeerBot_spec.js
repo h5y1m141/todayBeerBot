@@ -111,9 +111,10 @@
       return this.bot = new todayBeerBot();
     });
     return it('開栓情報を登録できる', function(done) {
-      var placdID;
+      var message, placdID;
       placdID = "520188b34cd6620ae80abc6b";
-      return this.bot.postBeerInfoToACS(placdID, function(result) {
+      message = 'test';
+      return this.bot.postBeerInfoToACS(placdID, message, function(result) {
         expect(result.success).toBe(true);
         return done();
       });
