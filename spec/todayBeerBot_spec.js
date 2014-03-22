@@ -63,7 +63,7 @@
     });
   });
 
-  describe('Bot about Parse RSS', function() {
+  xdescribe('Bot about Parse RSS', function() {
     beforeEach(function() {
       this.bot = new todayBeerBot();
       return this.feed = this.bot.feedList[0].rss;
@@ -101,6 +101,21 @@
       targetFeedURL = "http://ameblo.jp/sun2diner/entry-11773725674.html";
       return this.bot.checkIfFeedAlreadyPostOrNot(targetFeedURL, function(result) {
         expect(result[0].permalink).toEqual(targetFeedURL);
+        return done();
+      });
+    }, 8000);
+  });
+
+  describe('ACS', function() {
+    beforeEach(function() {
+      return this.bot = new todayBeerBot();
+    });
+    return it('開栓情報を登録できる', function(done) {
+      var message, placdID;
+      placdID = "520188b34cd6620ae80abc6b";
+      message = 'test';
+      return this.bot.postBeerInfoToACS(placdID, message, function(result) {
+        expect(result.success).toBe(true);
         return done();
       });
     }, 8000);
