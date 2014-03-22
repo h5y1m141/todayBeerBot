@@ -117,11 +117,20 @@ describe 'ACS',() ->
   beforeEach ->
     @bot = new todayBeerBot()
     
-  it '開栓情報を登録できる',(done) ->
+  xit '開栓情報を登録できる',(done) ->
     placdID = "520188b34cd6620ae80abc6b" # UNION BAKERY
     message = 'test'
     @bot.postBeerInfoToACS placdID,message,(result) ->
       expect(result.success).toBe true
+      done()
+
+  ,8000
+
+  it 'Twitter IDから該当のお店のplace_idが取得できる',(done) ->
+    twitterScreenName = "WATERING_HOLE_"
+
+    @bot._getPlaceIDFromACS twitterScreenName,(result) ->
+      expect(result.id).toEqual "521539988839410b2801aab7"
       done()
 
   ,8000

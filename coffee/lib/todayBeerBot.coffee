@@ -286,5 +286,9 @@ class todayBeerBot
       else
         @loggerRequest.info "Error to login: " + response.message
     )            
-    
+  _getPlaceIDFromACS:(twitterScreenName,callback) ->
+    data =
+      id:"521539988839410b2801aab7"
+      
+    return callback data
 exports.todayBeerBot = todayBeerBot

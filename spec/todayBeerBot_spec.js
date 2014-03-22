@@ -110,12 +110,20 @@
     beforeEach(function() {
       return this.bot = new todayBeerBot();
     });
-    return it('開栓情報を登録できる', function(done) {
+    xit('開栓情報を登録できる', function(done) {
       var message, placdID;
       placdID = "520188b34cd6620ae80abc6b";
       message = 'test';
       return this.bot.postBeerInfoToACS(placdID, message, function(result) {
         expect(result.success).toBe(true);
+        return done();
+      });
+    }, 8000);
+    return it('Twitter IDから該当のお店のplace_idが取得できる', function(done) {
+      var twitterScreenName;
+      twitterScreenName = "WATERING_HOLE_";
+      return this.bot._getPlaceIDFromACS(twitterScreenName, function(result) {
+        expect(result.id).toEqual("521539988839410b2801aab7");
         return done();
       });
     }, 8000);
