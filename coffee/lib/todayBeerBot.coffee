@@ -195,7 +195,8 @@ class todayBeerBot
     data =
       login: @loginID
       password: @loginPasswd
-    
+    currentTime = @moment()
+    that = @
     @ACS.Users.login(data, (response) =>
       if response.success
         @ACS.Statuses.create
@@ -203,8 +204,19 @@ class todayBeerBot
           session_id:response.meta.session_id
           message:message
         , (result) ->
-          console.log result
-          callback result 
+          # console.log result
+          # callback result 
+          
+          # Statusesの登録完了したら、該当の店舗の custom_fields statusesUpdateを更新する
+          
+          that.ACS.Places.update
+            place_id:placeID
+            session_id:response.meta.session_id
+            custom_fields:
+              statusesUpdate:currentTime
+          ,(e) ->
+            console.log e
+            callback e
     )
     
   _checkIfTweet:(targetTweet) ->
@@ -287,8 +299,13 @@ class todayBeerBot
         @loggerRequest.info "Error to login: " + response.message
     )            
   _getPlaceIDFromACS:(twitterScreenName,callback) ->
-    data =
-      id:"521539988839410b2801aab7"
-      
-    return callback data
+    @ACS.Places.query
+      page: 1
+      per_page: 1
+      where:
+        twitter:twitterScreenName
+    ,(result) ->
+      callback result
+      # if e.success
+      #   callback e.places[0]
 exports.todayBeerBot = todayBeerBot
