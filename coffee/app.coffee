@@ -13,6 +13,16 @@ bot.getTweet (items) ->
       check = ((tweet) ->
         # console.log "id is #{tweet.id_str} and flg is #{bot._checkIfTweet(tweet)}"
         if bot._checkIfTweet(tweet) is true
+          ## Tweet情報をACSのStatusesにも登録する
+          addTweetToACS = ((twitterScreenName, tweet) ->
+            console.log "find start. user is #{twitterScreenName} and tweet is #{tweet}"
+            bot._getPlaceIDFromACS twitterScreenName,(result) ->
+              if result.success and result.meta.total_pages isnt 0
+                placeID = result.places[0].id
+                bot.postBeerInfoToACS placeID,tweet,(result) ->
+                  console.log result
+          )(tweet.user.screen_name, tweet.text)
+          
           bot.retweet(tweet.id_str,(data) ->
             console.log "done text is #{data.text}"
           )          

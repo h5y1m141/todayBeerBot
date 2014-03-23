@@ -19,7 +19,20 @@
       for (_i = 0, _len = items.length; _i < _len; _i++) {
         item = items[_i];
         check = (function(tweet) {
+          var addTweetToACS;
           if (bot._checkIfTweet(tweet) === true) {
+            addTweetToACS = (function(twitterScreenName, tweet) {
+              console.log("find start. user is " + twitterScreenName + " and tweet is " + tweet);
+              return bot._getPlaceIDFromACS(twitterScreenName, function(result) {
+                var placeID;
+                if (result.success && result.meta.total_pages !== 0) {
+                  placeID = result.places[0].id;
+                  return bot.postBeerInfoToACS(placeID, tweet, function(result) {
+                    return console.log(result);
+                  });
+                }
+              });
+            })(tweet.user.screen_name, tweet.text);
             return bot.retweet(tweet.id_str, function(data) {
               return console.log("done text is " + data.text);
             });
