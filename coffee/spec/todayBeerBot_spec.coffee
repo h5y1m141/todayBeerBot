@@ -130,7 +130,8 @@ describe 'ACS',() ->
     twitterScreenName = "WATERING_HOLE_"
 
     @bot._getPlaceIDFromACS twitterScreenName,(result) ->
-      expect(result.id).toEqual "521539988839410b2801aab7"
+      if result.success
+        expect(result.places[0].id).toEqual "521539988839410b2801aab7"
       done()
 
   ,8000

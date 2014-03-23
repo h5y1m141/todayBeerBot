@@ -123,7 +123,9 @@
       var twitterScreenName;
       twitterScreenName = "WATERING_HOLE_";
       return this.bot._getPlaceIDFromACS(twitterScreenName, function(result) {
-        expect(result.id).toEqual("521539988839410b2801aab7");
+        if (result.success) {
+          expect(result.places[0].id).toEqual("521539988839410b2801aab7");
+        }
         return done();
       });
     }, 8000);
