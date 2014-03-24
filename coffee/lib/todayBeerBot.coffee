@@ -17,7 +17,12 @@ class todayBeerBot
       access_token_key    : conf.access_token_key
       access_token_secret : conf.access_token_secret
     )
-    @feedList = conf.feedList
+
+    mongo = require('mongodb')
+
+    mongo.connect @uri, {}, (error, db) =>
+      console.log "error is #{error}" if error
+      @connection = db.collection("shop")    
 
   parseFeed:(feed,callback) ->
     FeedParser = require('feedparser')
@@ -93,38 +98,36 @@ class todayBeerBot
       # ACSのStatusesオブジェクトに該当情報をPostする
       that.postBeerInfoToACS placeID,postData,(result) ->
         console.log "postBeerInfoToACS success flg is #{result.success}"
-      
-      that.tweet postData ,(data) ->
-        console.log "postData is done data is #{data}"
-        return callback data
+        # 上記で生成したtpostDataをTweetする
+        that.tweet postData ,(data) ->
+          console.log "postData is done data is #{data}"
+          return callback data
         
   checkIfFeedAlreadyPostOrNot:(targetFeedURL,callback) ->
-    mongo = require('mongodb')
-    # console.log "connect mongo uri is #{@uri}"
-    mongo.connect @uri, {}, (error, db) ->
-      throw error if error
-      param = {"permalink":targetFeedURL}
+    @ACS.Objects.query
+      classname:"onTapInfo"
+      page: 1
+      per_page:20
+      where:
+        permalink:targetFeedURL
+    , (e) ->
 
-      db.collection("shop").find(param).toArray (err,items) ->
-        throw err if err
-        db.close()
-        if items is null
-          return callback []
-        else 
-          return callback items
+      if e.success
+        callback e.onTapInfo
+      else
+        callback []
 
-      return
             
   feedAlreadyPost:(permalink,name,callback) ->
     mongo = require('mongodb')
     mongo.connect @uri, {}, (error, db) ->
-      throw error if error
+      console.log "feedAlreadyPost error  error is #{error}" if error
       param = 
         permalink : permalink
         name      : name
       setTimeout (->
         db.collection("shop").insert (param), (err,docs) ->
-          throw err if err
+          console.log "feedAlreadyPost err #{err}" if err
           db.close()
           console.log docs
           callback docs

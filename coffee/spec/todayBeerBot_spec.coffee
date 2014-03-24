@@ -104,22 +104,23 @@ xdescribe 'Bot about Parse RSS',() ->
     expect(@bot._htmlToText(rawHTML)).toEqual "12/21(土)本日のビール箕面ゴッドファーザー2(ベルギー柚子スタウト,限定)いわて蔵MASAJIのダンディビター(イングリッシュビター,限定)湘南IPAブラボーシングルホップ(限定)木曽路ペールエールリアルエール(限定)"
 
         
-  it('should be return true flg after the target feed already is posted', (done) ->
-    targetFeedURL = "http://ameblo.jp/sun2diner/entry-11773725674.html"
-    @bot.checkIfFeedAlreadyPostOrNot(targetFeedURL, (result) ->
-      expect(result[0].permalink).toEqual targetFeedURL
-      done()
-    )  
-  ,8000 )
   
 # ここから開栓情報をACSにも登録する処理についてのテスト
 describe 'ACS',() ->
   beforeEach ->
     @bot = new todayBeerBot()
     
+  it('すでに開栓情報を投稿済かどうか確認できる', (done) ->
+    targetFeedURL = "http://ameblo.jp/sun2diner/entry-11773725674.html"
+    @bot.checkIfFeedAlreadyPostOrNot(targetFeedURL, (result) ->
+      expect(result[0].permalink).toEqual targetFeedURL
+      done()
+    )  
+  ,8000 )
+    
   xit '開栓情報を登録できる',(done) ->
     placdID = "520188b34cd6620ae80abc6b" # UNION BAKERY
-    message = 'test'
+    message = 'これはテストの投稿です'
     @bot.postBeerInfoToACS placdID,message,(result) ->
       expect(result.success).toBe true
       done()
