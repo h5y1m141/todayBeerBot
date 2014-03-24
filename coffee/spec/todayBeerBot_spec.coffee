@@ -110,14 +110,24 @@ describe 'ACS',() ->
   beforeEach ->
     @bot = new todayBeerBot()
     
-  it('すでに開栓情報を投稿済かどうか確認できる', (done) ->
+  it 'すでに開栓情報を投稿済かどうか確認できる', (done) ->
     targetFeedURL = "http://ameblo.jp/sun2diner/entry-11773725674.html"
     @bot.checkIfFeedAlreadyPostOrNot(targetFeedURL, (result) ->
       expect(result[0].permalink).toEqual targetFeedURL
       done()
     )  
-  ,8000 )
+  ,5000
+
+  it 'お店のブログで発信されたる開栓情報を登録できる', (done) ->
+    permalink = "http://www.facebook.com/craftbeermarketmitukoshimae/posts/717360874982183"
+    name      = "CRAFT BEER Market 三越前店's Facebook Wall"
     
+    @bot.feedAlreadyPost permalink,name, (result) ->
+      expect(result).toBe true
+      done()
+
+  ,8000 
+        
   xit '開栓情報を登録できる',(done) ->
     placdID = "520188b34cd6620ae80abc6b" # UNION BAKERY
     message = 'これはテストの投稿です'
@@ -136,3 +146,8 @@ describe 'ACS',() ->
       done()
 
   ,8000
+
+  it 'just test', () ->
+    flg = true
+    expect(flg).toBe true
+    return

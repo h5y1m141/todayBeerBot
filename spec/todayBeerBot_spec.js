@@ -109,6 +109,15 @@
         expect(result[0].permalink).toEqual(targetFeedURL);
         return done();
       });
+    }, 5000);
+    it('お店のブログで発信されたる開栓情報を登録できる', function(done) {
+      var name, permalink;
+      permalink = "http://www.facebook.com/craftbeermarketmitukoshimae/posts/717360874982183";
+      name = "CRAFT BEER Market 三越前店's Facebook Wall";
+      return this.bot.feedAlreadyPost(permalink, name, function(result) {
+        expect(result).toBe(true);
+        return done();
+      });
     }, 8000);
     xit('開栓情報を登録できる', function(done) {
       var message, placdID;
@@ -119,7 +128,7 @@
         return done();
       });
     }, 8000);
-    return it('Twitter IDから該当のお店のplace_idが取得できる', function(done) {
+    it('Twitter IDから該当のお店のplace_idが取得できる', function(done) {
       var twitterScreenName;
       twitterScreenName = "WATERING_HOLE_";
       return this.bot._getPlaceIDFromACS(twitterScreenName, function(result) {
@@ -129,6 +138,11 @@
         return done();
       });
     }, 8000);
+    return it('just test', function() {
+      var flg;
+      flg = true;
+      expect(flg).toBe(true);
+    });
   });
 
 }).call(this);

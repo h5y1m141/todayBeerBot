@@ -119,20 +119,21 @@ class todayBeerBot
 
             
   feedAlreadyPost:(permalink,name,callback) ->
-    mongo = require('mongodb')
-    mongo.connect @uri, {}, (error, db) ->
-      console.log "feedAlreadyPost error  error is #{error}" if error
-      param = 
-        permalink : permalink
-        name      : name
-      setTimeout (->
-        db.collection("shop").insert (param), (err,docs) ->
-          console.log "feedAlreadyPost err #{err}" if err
-          db.close()
-          console.log docs
-          callback docs
-      ), 1000
-           
+    @_login((session_id) =>
+      @ACS.Objects.create
+        classname:"onTapInfo"
+        session_id:session_id
+        fields:
+          permalink:permalink
+          name:name
+      ,(e) ->
+        console.log e
+        if e.success
+          callback true
+        else
+          callback false
+    )
+     
   _checkIfFeed:(item) ->
     currentTime = @moment()
     feedType = item.meta["#type"]
