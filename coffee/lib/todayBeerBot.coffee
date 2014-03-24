@@ -8,7 +8,6 @@ class todayBeerBot
     @loginID = conf.acs.user.id
     @loginPasswd = conf.acs.user.password
     @ACS.init(conf.acs.production)    
-    @uri = "mongodb://#{conf.mongodb.db}:#{conf.mongodb.password}@ds033639.mongolab.com:33639/craftbeerfan"    
     @_ = require('underscore')    
     @moment = require('moment')
     @twit = new twitter(
@@ -17,12 +16,6 @@ class todayBeerBot
       access_token_key    : conf.access_token_key
       access_token_secret : conf.access_token_secret
     )
-
-    mongo = require('mongodb')
-
-    mongo.connect @uri, {}, (error, db) =>
-      console.log "error is #{error}" if error
-      @connection = db.collection("shop")    
 
   parseFeed:(feed,callback) ->
     FeedParser = require('feedparser')
