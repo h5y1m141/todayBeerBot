@@ -3,7 +3,8 @@ module.exports = (grunt) ->
     pkg: grunt.file.readJSON 'package.json'
     watch:
       files:['coffee/**/*.coffee']
-      tasks:['coffee','exec:jasmine']
+      tasks:['coffee']
+      # tasks:['coffee','exec:jasmine']
     jasmine:
       product:
         src: "/lib/*.js"
