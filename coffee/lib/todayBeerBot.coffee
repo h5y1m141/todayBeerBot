@@ -8,7 +8,6 @@ class todayBeerBot
     @loginID = conf.acs.user.id
     @loginPasswd = conf.acs.user.password
     @ACS.init(conf.acs.production)    
-    @uri = "mongodb://#{conf.mongodb.db}:#{conf.mongodb.password}@ds033639.mongolab.com:33639/craftbeerfan"    
     @_ = require('underscore')    
     @moment = require('moment')
     @twit = new twitter(
@@ -17,7 +16,6 @@ class todayBeerBot
       access_token_key    : conf.access_token_key
       access_token_secret : conf.access_token_secret
     )
-    @feedList = conf.feedList
 
   parseFeed:(feed,callback) ->
     FeedParser = require('feedparser')
@@ -93,43 +91,57 @@ class todayBeerBot
       # ACSのStatusesオブジェクトに該当情報をPostする
       that.postBeerInfoToACS placeID,postData,(result) ->
         console.log "postBeerInfoToACS success flg is #{result.success}"
-      
-      that.tweet postData ,(data) ->
-        console.log "postData is done data is #{data}"
-        return callback data
+        # 上記で生成したtpostDataをTweetする
+        that.tweet postData ,(data) ->
+          console.log "postData is done data is #{data}"
+          return callback data
         
-  checkIfFeedAlreadyPostOrNot:(targetFeedURL,callback) ->
-    mongo = require('mongodb')
-    # console.log "connect mongo uri is #{@uri}"
-    mongo.connect @uri, {}, (error, db) ->
-      throw error if error
-      param = {"permalink":targetFeedURL}
+  checkIfFeedAlreadyPostOrNot:(targetFeedURL,pubDate,callback) ->
+    that = @
+    flg = null
+    @ACS.Objects.query
+      classname:"onTapInfo"
+      page: 1
+      per_page:1
+      where:
+        permalink:targetFeedURL
+    , (e) ->
+      if e.success
+        # targetFeedURLが存在してる場合にはすでに取得済なのでまずはその判定を行う
+        if e.meta.total_pages is 1
+          callback true
+        else  
+          # ターゲットとなる投稿情報の更新日（pubDate）が最近のものか
+          # どうか判定する
+          currentTime = that.moment()
+          WITHINTIMEFLG = 120000
+          flg = that._withinTheLimitsOfTheTime(pubDate,currentTime,WITHINTIMEFLG)
 
-      db.collection("shop").find(param).toArray (err,items) ->
-        throw err if err
-        db.close()
-        if items is null
-          return callback []
-        else 
-          return callback items
+          if flg is true
+            callback false
+          else
+            callback true
 
-      return
+      else
+        callback true
+
             
   feedAlreadyPost:(permalink,name,callback) ->
-    mongo = require('mongodb')
-    mongo.connect @uri, {}, (error, db) ->
-      throw error if error
-      param = 
-        permalink : permalink
-        name      : name
-      setTimeout (->
-        db.collection("shop").insert (param), (err,docs) ->
-          throw err if err
-          db.close()
-          console.log docs
-          callback docs
-      ), 1000
-           
+    @_login((session_id) =>
+      @ACS.Objects.create
+        classname:"onTapInfo"
+        session_id:session_id
+        fields:
+          permalink:permalink
+          name:name
+      ,(e) ->
+        # console.log e
+        if e.success
+          callback true
+        else
+          callback false
+    )
+     
   _checkIfFeed:(item) ->
     currentTime = @moment()
     feedType = item.meta["#type"]
@@ -195,7 +207,8 @@ class todayBeerBot
     data =
       login: @loginID
       password: @loginPasswd
-    
+    currentTime = @moment()
+    that = @
     @ACS.Users.login(data, (response) =>
       if response.success
         @ACS.Statuses.create
@@ -203,8 +216,19 @@ class todayBeerBot
           session_id:response.meta.session_id
           message:message
         , (result) ->
-          console.log result
-          callback result 
+          # console.log result
+          # callback result 
+          
+          # Statusesの登録完了したら、該当の店舗の custom_fields statusesUpdateを更新する
+          
+          that.ACS.Places.update
+            place_id:placeID
+            session_id:response.meta.session_id
+            custom_fields:
+              statusesUpdate:currentTime
+          ,(e) ->
+            console.log e
+            callback e
     )
     
   _checkIfTweet:(targetTweet) ->
@@ -286,5 +310,14 @@ class todayBeerBot
       else
         @loggerRequest.info "Error to login: " + response.message
     )            
-    
+  _getPlaceIDFromACS:(twitterScreenName,callback) ->
+    @ACS.Places.query
+      page: 1
+      per_page: 1
+      where:
+        twitter:twitterScreenName
+    ,(result) ->
+      callback result
+      # if e.success
+      #   callback e.places[0]
 exports.todayBeerBot = todayBeerBot
