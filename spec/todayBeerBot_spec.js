@@ -100,17 +100,37 @@
 
   describe('ACS', function() {
     beforeEach(function() {
-      return this.bot = new todayBeerBot();
+      this.bot = new todayBeerBot();
+      return this.moment = require("moment");
     });
-    it('すでに開栓情報を投稿済かどうか確認できる', function(done) {
-      var targetFeedURL;
+    it('投稿済の開栓情報の場合にはflgがtrueになる', function(done) {
+      var dummyPubDate, targetFeedURL;
       targetFeedURL = "http://ameblo.jp/sun2diner/entry-11773725674.html";
-      return this.bot.checkIfFeedAlreadyPostOrNot(targetFeedURL, function(result) {
-        expect(result[0].permalink).toEqual(targetFeedURL);
+      dummyPubDate = this.moment();
+      return this.bot.checkIfFeedAlreadyPostOrNot(targetFeedURL, dummyPubDate, function(flg) {
+        expect(flg).toBe(true);
         return done();
       });
     }, 5000);
-    it('お店のブログで発信されたる開栓情報を登録できる', function(done) {
+    it('未登録の開栓情報の場合には該当flgがfalseになる', function(done) {
+      var dummyFeedURL, dummyPubDate;
+      dummyFeedURL = "http://craftbeer-tokyo.info/23/c/brewdog-roppongi/";
+      dummyPubDate = this.moment();
+      return this.bot.checkIfFeedAlreadyPostOrNot(dummyFeedURL, dummyPubDate, function(flg) {
+        expect(flg).toBe(false);
+        return done();
+      });
+    }, 5000);
+    it('未登録の開栓情報だが投稿日が昔のものの場合には該当flgがtrueになる', function(done) {
+      var dummyFeedURL, dummyPubDate;
+      dummyFeedURL = "http://craftbeer-tokyo.info/23/c/brewdog-roppongi/";
+      dummyPubDate = this.moment("2011/01/01 00:00:00");
+      return this.bot.checkIfFeedAlreadyPostOrNot(dummyFeedURL, dummyPubDate, function(flg) {
+        expect(flg).toBe(true);
+        return done();
+      });
+    }, 5000);
+    xit('お店のブログで発信されたる開栓情報を登録できる', function(done) {
       var name, permalink;
       permalink = "http://www.facebook.com/craftbeermarketmitukoshimae/posts/717360874982183";
       name = "CRAFT BEER Market 三越前店's Facebook Wall";

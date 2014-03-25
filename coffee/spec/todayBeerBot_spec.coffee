@@ -109,16 +109,42 @@ xdescribe 'Bot about Parse RSS',() ->
 describe 'ACS',() ->
   beforeEach ->
     @bot = new todayBeerBot()
+    @moment = require("moment")
     
-  it 'すでに開栓情報を投稿済かどうか確認できる', (done) ->
+  it '投稿済の開栓情報の場合にはflgがtrueになる', (done) ->
     targetFeedURL = "http://ameblo.jp/sun2diner/entry-11773725674.html"
-    @bot.checkIfFeedAlreadyPostOrNot(targetFeedURL, (result) ->
-      expect(result[0].permalink).toEqual targetFeedURL
+    dummyPubDate = @moment()
+
+    @bot.checkIfFeedAlreadyPostOrNot(targetFeedURL, dummyPubDate,(flg) ->
+      expect(flg).toBe true
       done()
     )  
   ,5000
 
-  it 'お店のブログで発信されたる開栓情報を登録できる', (done) ->
+
+  it '未登録の開栓情報の場合には該当flgがfalseになる', (done) ->
+    # クラフトビール東京は開栓情報確認元としては登録しないので以下をダミーのURLとする
+    dummyFeedURL = "http://craftbeer-tokyo.info/23/c/brewdog-roppongi/"
+    dummyPubDate = @moment()
+
+    @bot.checkIfFeedAlreadyPostOrNot(dummyFeedURL, dummyPubDate,(flg) ->
+      expect(flg).toBe false
+      done()
+    )  
+  ,5000
+
+  it '未登録の開栓情報だが投稿日が昔のものの場合には該当flgがtrueになる', (done) ->
+    # クラフトビール東京は開栓情報確認元としては登録しないので以下をダミーのURLとする
+    dummyFeedURL = "http://craftbeer-tokyo.info/23/c/brewdog-roppongi/"
+    dummyPubDate = @moment("2011/01/01 00:00:00")
+    @bot.checkIfFeedAlreadyPostOrNot(dummyFeedURL, dummyPubDate,(flg) ->
+      expect(flg).toBe true
+      done()
+    )  
+  ,5000
+
+
+  xit 'お店のブログで発信されたる開栓情報を登録できる', (done) ->
     permalink = "http://www.facebook.com/craftbeermarketmitukoshimae/posts/717360874982183"
     name      = "CRAFT BEER Market 三越前店's Facebook Wall"
     

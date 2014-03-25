@@ -96,19 +96,34 @@ class todayBeerBot
           console.log "postData is done data is #{data}"
           return callback data
         
-  checkIfFeedAlreadyPostOrNot:(targetFeedURL,callback) ->
+  checkIfFeedAlreadyPostOrNot:(targetFeedURL,pubDate,callback) ->
+    that = @
+    flg = null
     @ACS.Objects.query
       classname:"onTapInfo"
       page: 1
-      per_page:20
+      per_page:1
       where:
         permalink:targetFeedURL
     , (e) ->
-
       if e.success
-        callback e.onTapInfo
+        # targetFeedURLが存在してる場合にはすでに取得済なのでまずはその判定を行う
+        if e.meta.total_pages is 1
+          callback true
+        else  
+          # ターゲットとなる投稿情報の更新日（pubDate）が最近のものか
+          # どうか判定する
+          currentTime = that.moment()
+          WITHINTIMEFLG = 120000
+          flg = that._withinTheLimitsOfTheTime(pubDate,currentTime,WITHINTIMEFLG)
+
+          if flg is true
+            callback false
+          else
+            callback true
+
       else
-        callback []
+        callback true
 
             
   feedAlreadyPost:(permalink,name,callback) ->
@@ -120,7 +135,7 @@ class todayBeerBot
           permalink:permalink
           name:name
       ,(e) ->
-        console.log e
+        # console.log e
         if e.success
           callback true
         else
