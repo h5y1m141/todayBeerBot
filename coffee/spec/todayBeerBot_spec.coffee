@@ -104,24 +104,76 @@ xdescribe 'Bot about Parse RSS',() ->
     expect(@bot._htmlToText(rawHTML)).toEqual "12/21(土)本日のビール箕面ゴッドファーザー2(ベルギー柚子スタウト,限定)いわて蔵MASAJIのダンディビター(イングリッシュビター,限定)湘南IPAブラボーシングルホップ(限定)木曽路ペールエールリアルエール(限定)"
 
         
-  it('should be return true flg after the target feed already is posted', (done) ->
-    targetFeedURL = "http://ameblo.jp/sun2diner/entry-11773725674.html"
-    @bot.checkIfFeedAlreadyPostOrNot(targetFeedURL, (result) ->
-      expect(result[0].permalink).toEqual targetFeedURL
-      done()
-    )  
-  ,8000 )
   
 # ここから開栓情報をACSにも登録する処理についてのテスト
 describe 'ACS',() ->
   beforeEach ->
     @bot = new todayBeerBot()
+    @moment = require("moment")
     
-  it '開栓情報を登録できる',(done) ->
+  it '投稿済の開栓情報の場合にはflgがtrueになる', (done) ->
+    targetFeedURL = "http://ameblo.jp/sun2diner/entry-11773725674.html"
+    dummyPubDate = @moment()
+
+    @bot.checkIfFeedAlreadyPostOrNot(targetFeedURL, dummyPubDate,(flg) ->
+      expect(flg).toBe true
+      done()
+    )  
+  ,5000
+
+
+  it '未登録の開栓情報の場合には該当flgがfalseになる', (done) ->
+    # クラフトビール東京は開栓情報確認元としては登録しないので以下をダミーのURLとする
+    dummyFeedURL = "http://craftbeer-tokyo.info/23/c/brewdog-roppongi/"
+    dummyPubDate = @moment()
+
+    @bot.checkIfFeedAlreadyPostOrNot(dummyFeedURL, dummyPubDate,(flg) ->
+      expect(flg).toBe false
+      done()
+    )  
+  ,5000
+
+  it '未登録の開栓情報だが投稿日が昔のものの場合には該当flgがtrueになる', (done) ->
+    # クラフトビール東京は開栓情報確認元としては登録しないので以下をダミーのURLとする
+    dummyFeedURL = "http://craftbeer-tokyo.info/23/c/brewdog-roppongi/"
+    dummyPubDate = @moment("2011/01/01 00:00:00")
+    @bot.checkIfFeedAlreadyPostOrNot(dummyFeedURL, dummyPubDate,(flg) ->
+      expect(flg).toBe true
+      done()
+    )  
+  ,5000
+
+
+  xit 'お店のブログで発信されたる開栓情報を登録できる', (done) ->
+    permalink = "http://www.facebook.com/craftbeermarketmitukoshimae/posts/717360874982183"
+    name      = "CRAFT BEER Market 三越前店's Facebook Wall"
+    
+    @bot.feedAlreadyPost permalink,name, (result) ->
+      expect(result).toBe true
+      done()
+
+  ,8000 
+        
+  xit '開栓情報を登録できる',(done) ->
     placdID = "520188b34cd6620ae80abc6b" # UNION BAKERY
-    message = 'test'
+    message = 'これはテストの投稿です'
     @bot.postBeerInfoToACS placdID,message,(result) ->
       expect(result.success).toBe true
       done()
 
   ,8000
+
+  it 'Twitter IDから該当のお店のplace_idが取得できる',(done) ->
+    twitterScreenName = "WATERING_HOLE_"
+
+    @bot._getPlaceIDFromACS twitterScreenName,(result) ->
+      if result.success
+        expect(result.places[0].id).toEqual "521539988839410b2801aab7"
+      done()
+
+  ,8000
+
+  it 'just test', () ->
+    flg = true
+    expect(flg).toBe true
+    return
