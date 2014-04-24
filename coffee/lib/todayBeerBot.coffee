@@ -89,7 +89,7 @@ class todayBeerBot
       # console.log "#{postData} #{short_url}"
 
       # ACSのStatusesオブジェクトに該当情報をPostする
-      that.postBeerInfoToACS placeID,postData,(result) ->
+      that.postBeerInfoToACS placeID,postData,base_url,(result) ->
         console.log "postBeerInfoToACS success flg is #{result.success}"
         # 上記で生成したtpostDataをTweetする
         that.tweet postData ,(data) ->
@@ -180,7 +180,7 @@ class todayBeerBot
       
   retweet:(id_str,callback) ->
     @twit.verifyCredentials((err, data) ->
-      # console.log data
+      console.log data
 
     ).retweetStatus id_str,(err, data) ->
       console.log "err is #{err} and data is #{data}"        
@@ -203,7 +203,7 @@ class todayBeerBot
         callback data
       
 
-  postBeerInfoToACS:(placeID,message,callback) ->
+  postBeerInfoToACS:(placeID,message,permalink,callback) ->
     data =
       login: @loginID
       password: @loginPasswd
@@ -215,6 +215,9 @@ class todayBeerBot
           place_id:placeID
           session_id:response.meta.session_id
           message:message
+          custom_fields:
+            permalink:permalink
+          
         , (result) ->
           # console.log result
           # callback result 
