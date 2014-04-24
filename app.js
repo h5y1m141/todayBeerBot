@@ -19,20 +19,22 @@
       for (_i = 0, _len = items.length; _i < _len; _i++) {
         item = items[_i];
         check = (function(tweet) {
-          var addTweetToACS;
+          var addTweetToACS, permalink;
           if (bot._checkIfTweet(tweet) === true) {
-            addTweetToACS = (function(twitterScreenName, tweet) {
+            permalink = "https://twitter.com/" + tweet.user.screen_name + "/status/" + tweet.id_str;
+            console.log("twitter permalink is : " + permalink);
+            addTweetToACS = (function(twitterScreenName, tweet, targetLink) {
               console.log("find start. user is " + twitterScreenName + " and tweet is " + tweet);
               return bot._getPlaceIDFromACS(twitterScreenName, function(result) {
                 var placeID;
                 if (result.success && result.meta.total_pages !== 0) {
                   placeID = result.places[0].id;
-                  return bot.postBeerInfoToACS(placeID, tweet, function(result) {
+                  return bot.postBeerInfoToACS(placeID, tweet, targetLink, function(result) {
                     return console.log(result);
                   });
                 }
               });
-            })(tweet.user.screen_name, tweet.text);
+            })(tweet.user.screen_name, tweet.text, permalink);
             return bot.retweet(tweet.id_str, function(data) {
               return console.log("done text is " + data.text);
             });
@@ -48,7 +50,6 @@
     _results = [];
     for (_i = 0, _len = items.length; _i < _len; _i++) {
       item = items[_i];
-      console.log(item);
       _results.push(getFeed = (function(obj) {
         return bot.parseFeed(obj.custom_fields.feed, function(items) {
           var func, _j, _len1, _results1;
@@ -57,13 +58,11 @@
             for (_j = 0, _len1 = items.length; _j < _len1; _j++) {
               item = items[_j];
               _results1.push(func = (function(permalink, name, item, placeID) {
-                console.log("start func() permalink is " + permalink);
                 return bot.checkIfFeedAlreadyPostOrNot(permalink, item.pubDate, function(flg) {
                   if (flg === true) {
-                    return console.log("" + permalink + " is already post or pubDate is old");
+
                   } else {
                     return bot.feedAlreadyPost(permalink, name, function(docs) {
-                      console.log("feedAlreadyPost docs is " + docs);
                       return bot.postBlogEntry(item, placeID, function(result) {
                         return console.log(result);
                       });
