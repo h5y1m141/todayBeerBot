@@ -204,35 +204,44 @@ class todayBeerBot
       
 
   postBeerInfoToACS:(placeID,message,permalink,callback) ->
-    data =
-      login: @loginID
-      password: @loginPasswd
-    currentTime = @moment()
+    acs = @ACS
     that = @
-    @ACS.Users.login(data, (response) =>
-      if response.success
-        @ACS.Statuses.create
-          place_id:placeID
-          session_id:response.meta.session_id
-          message:message
-          custom_fields:
-            permalink:permalink
-          
-        , (result) ->
-          # console.log result
-          # callback result 
-          
-          # Statusesの登録完了したら、該当の店舗の custom_fields statusesUpdateを更新する
-          
-          that.ACS.Places.update
-            place_id:placeID
-            session_id:response.meta.session_id
-            custom_fields:
-              statusesUpdate:currentTime
-          ,(e) ->
-            console.log e
-            callback e
-    )
+    acs.Statuses.query
+      page:1
+      where:
+        custom_fields:
+          permalink:permalink
+    ,(e) ->
+      
+      if e.success isnt true
+        console.log "start postBeerInfoACS"
+        data =
+          login: that.loginID
+          password: that.loginPasswd
+        currentTime = that.moment()
+        acs.Users.login(data, (response) =>
+          if response.success
+            acs.Statuses.create
+              place_id:placeID
+              session_id:response.meta.session_id
+              message:message
+              custom_fields:
+                permalink:permalink
+              
+            , (result) ->
+              # console.log result
+              # callback result 
+              # Statusesの登録完了したら、該当の店舗の custom_fields statusesUpdateを更新する
+              
+              acs.Places.update
+                place_id:placeID
+                session_id:response.meta.session_id
+                custom_fields:
+                  statusesUpdate:currentTime
+              ,(e) ->
+                console.log e
+                callback e
+        )
     
   _checkIfTweet:(targetTweet) ->
     id_str = targetTweet.id_str    
@@ -240,6 +249,7 @@ class todayBeerBot
     currentTime = @moment()
     
     if @_hasCraftBeerKeyword(targetTweet.text) is true and @_withinTheLimitsOfTheTime(tweetTime, currentTime) is true
+    # if @_hasCraftBeerKeyword(targetTweet.text) is true
       return true
     else
       return false
