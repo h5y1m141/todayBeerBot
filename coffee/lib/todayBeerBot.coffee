@@ -212,9 +212,11 @@ class todayBeerBot
         custom_fields:
           permalink:permalink
     ,(e) ->
-      
-      if e.success isnt true
-        console.log "start postBeerInfoACS"
+      console.log "Statuses.query finish result: #{e.meta.total_pages}"
+      if e.meta.total_pages isnt 0
+        console.log "#{permalink}: no postBeerInfo"
+      else
+        console.log "#{permalink}: start postBeerInfoACS"
         data =
           login: that.loginID
           password: that.loginPasswd
