@@ -180,14 +180,15 @@ class todayBeerBot
       
   retweet:(id_str,callback) ->
     @twit.verifyCredentials((err, data) ->
-      console.log data
-
+      # console.log data
     ).retweetStatus id_str,(err, data) ->
-      console.log "err is #{err} and data is #{data}"        
-      if err
-        callback err
-      else
-        callback data
+      # console.log "err is #{err} and data is #{data}"
+      callback(err,data)
+      
+      # if err
+      #   callback err
+      # else
+      #   callback data
   tweet:(postData,callback) ->
     # fakseResult =
     #   name:'dummy'
@@ -206,43 +207,32 @@ class todayBeerBot
   postBeerInfoToACS:(placeID,message,permalink,callback) ->
     acs = @ACS
     that = @
-    acs.Statuses.query
-      page:1
-      where:
-        custom_fields:
-          permalink:permalink
-    ,(e) ->
-      console.log "Statuses.query finish result: #{e.meta.total_pages}"
-      if e.meta.total_pages isnt 0
-        console.log "#{permalink}: no postBeerInfo"
-      else
-        console.log "#{permalink}: start postBeerInfoACS"
-        data =
-          login: that.loginID
-          password: that.loginPasswd
-        currentTime = that.moment()
-        acs.Users.login(data, (response) =>
-          if response.success
-            acs.Statuses.create
-              place_id:placeID
-              session_id:response.meta.session_id
-              message:message
-              custom_fields:
-                permalink:permalink
-              
-            , (result) ->
-              # console.log result
-              # callback result 
-              # Statusesの登録完了したら、該当の店舗の custom_fields statusesUpdateを更新する
-              
-              acs.Places.update
-                place_id:placeID
-                session_id:response.meta.session_id
-                custom_fields:
-                  statusesUpdate:currentTime
-              ,(e) ->
-                console.log e
-                callback e
+    data =
+      login: that.loginID
+      password: that.loginPasswd
+    currentTime = that.moment()
+    acs.Users.login(data, (response) =>
+      if response.success
+        acs.Statuses.create
+          place_id:placeID
+          session_id:response.meta.session_id
+          message:message
+          custom_fields:
+            permalink:permalink
+          
+        , (result) ->
+          # console.log result
+          # callback result 
+          # Statusesの登録完了したら、該当の店舗の custom_fields statusesUpdateを更新する
+          
+          acs.Places.update
+            place_id:placeID
+            session_id:response.meta.session_id
+            custom_fields:
+              statusesUpdate:currentTime
+          ,(e) ->
+            console.log e
+            callback e
         )
     
   _checkIfTweet:(targetTweet) ->
