@@ -19,26 +19,27 @@
       for (_i = 0, _len = items.length; _i < _len; _i++) {
         item = items[_i];
         check = (function(tweet) {
-          var addTweetToACS, permalink;
-          if (bot._checkIfTweet(tweet) === true) {
-            permalink = "https://twitter.com/" + tweet.user.screen_name + "/status/" + tweet.id_str;
-            console.log("twitter permalink is : " + permalink);
-            addTweetToACS = (function(twitterScreenName, tweet, targetLink) {
-              console.log("find start. user is " + twitterScreenName + " and tweet is " + tweet);
-              return bot._getPlaceIDFromACS(twitterScreenName, function(result) {
-                var placeID;
-                if (result.success && result.meta.total_pages !== 0) {
-                  placeID = result.places[0].id;
-                  return bot.postBeerInfoToACS(placeID, tweet, targetLink, function(result) {
-                    return console.log(result);
-                  });
-                }
-              });
-            })(tweet.user.screen_name, tweet.text, permalink);
-            return bot.retweet(tweet.id_str, function(data) {
-              return console.log("done text is " + data.text);
-            });
-          }
+          var permalink, twitterScreenName;
+          twitterScreenName = tweet.user.screen_name;
+          permalink = "https://twitter.com/" + tweet.user.screen_name + "/status/" + tweet.id_str;
+          console.log("tweet permalink is " + permalink);
+          return bot.retweet(tweet.id_str, function(err, data) {
+            if (err) {
+              return console.log("already retweet");
+            } else {
+              if (bot._checkIfTweet(tweet) === true) {
+                return bot._getPlaceIDFromACS(twitterScreenName, function(result) {
+                  var placeID;
+                  if (result.success && result.meta.total_pages !== 0) {
+                    placeID = result.places[0].id;
+                    return bot.postBeerInfoToACS(placeID, tweet, permalink, function(result) {
+                      return console.log(result);
+                    });
+                  }
+                });
+              }
+            }
+          });
         })(item);
       }
       return console.log("tweet check done");

@@ -12,21 +12,32 @@ bot.getTweet (items) ->
     for item in items
       check = ((tweet) ->
         # console.log "id is #{tweet.id_str} and flg is #{bot._checkIfTweet(tweet)}"
-        if bot._checkIfTweet(tweet) is true
-          ## Tweet情報をACSのStatusesにも登録する
-          permalink = "https://twitter.com/#{tweet.user.screen_name}/status/#{tweet.id_str}"
-          console.log "twitter permalink is : #{permalink}"
-          addTweetToACS = ((twitterScreenName, tweet, targetLink) ->
-            console.log "find start. user is #{twitterScreenName} and tweet is #{tweet}"
-            bot._getPlaceIDFromACS twitterScreenName,(result) ->
-              if result.success and result.meta.total_pages isnt 0
-                placeID = result.places[0].id
-                bot.postBeerInfoToACS placeID,tweet,targetLink,(result) ->
-                  console.log result
-          )(tweet.user.screen_name, tweet.text, permalink)
-          
-          bot.retweet(tweet.id_str,(data) ->
-            console.log "done text is #{data.text}"
+        # if bot._checkIfTweet(tweet) is true
+        #   ## Tweet情報をACSのStatusesにも登録する
+        #   permalink = "https://twitter.com/#{tweet.user.screen_name}/status/#{tweet.id_str}"
+        #   console.log "twitter permalink is : #{permalink}"
+        #   addTweetToACS = ((twitterScreenName, tweet, targetLink) ->
+        #     console.log "find start. user is #{twitterScreenName} and tweet is #{tweet}"
+        #     bot._getPlaceIDFromACS twitterScreenName,(result) ->
+        #       if result.success and result.meta.total_pages isnt 0
+        #         placeID = result.places[0].id
+        #         bot.postBeerInfoToACS placeID,tweet,targetLink,(result) ->
+        #           console.log result
+        #   )(tweet.user.screen_name, tweet.text, permalink)
+        twitterScreenName = tweet.user.screen_name
+        permalink = "https://twitter.com/#{tweet.user.screen_name}/status/#{tweet.id_str}"
+        console.log "tweet permalink is #{permalink}"
+        bot.retweet(tweet.id_str,(err,data) ->
+          if err
+            console.log "already retweet"
+          else  
+            if bot._checkIfTweet(tweet) is true
+              bot._getPlaceIDFromACS twitterScreenName,(result) ->
+                if result.success and result.meta.total_pages isnt 0
+                  placeID = result.places[0].id
+                  bot.postBeerInfoToACS placeID,tweet,permalink,(result) ->
+                    console.log result
+
           )          
       )(item)
     console.log "tweet check done"  
